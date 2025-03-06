@@ -18,14 +18,15 @@ SGS_CORE_CONTAINER="sgs-core-container-$INSTALLATION_ID"
 REDIS_CONTAINER="redis-container-$INSTALLATION_ID"
 HDF5_CONTAINER="hdf5-container-$INSTALLATION_ID"
 
-# Stop and remove existing containers (if any)
-echo "Stopping and removing existing containers..."
-podman stop $SGS_CORE_CONTAINER $REDIS_CONTAINER $HDF5_CONTAINER 2>/dev/null
-podman rm $SGS_CORE_CONTAINER $REDIS_CONTAINER $HDF5_CONTAINER 2>/dev/null
+# Cleanup function to stop and remove existing Pod
+cleanup() {
+    echo "Stopping and removing existing Pod $POD_NAME..."
+    podman pod stop $POD_NAME 2>/dev/null
+    podman pod rm -f $POD_NAME 2>/dev/null
+}
 
-# Remove the existing Pod (if any)
-echo "Removing existing Pod..."
-podman pod rm -f $POD_NAME 2>/dev/null
+# Cleanup existing Pod (if any)
+cleanup
 
 # Check if port 6379 is in use
 if lsof -i :6379 >/dev/null 2>&1; then

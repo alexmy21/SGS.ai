@@ -10,8 +10,8 @@ RUN pip install uv
 # Copy the requirements file
 COPY pyproject.toml .
 
-# Install dependencies using uv
-RUN uv pip install -r pyproject.toml
+# Install dependencies system-wide using uv
+RUN uv pip install --system -r pyproject.toml
 
 # Copy the SGS.core source code
 COPY . .

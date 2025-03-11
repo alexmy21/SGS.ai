@@ -18,11 +18,22 @@ async def handle_request(request):
     # Return the result as JSON
     return JSONResponse(result)
 
+# # Define the routes
+# routes = [
+#     Route("/process", handle_request, methods=["POST"])
+# ]
+
+# Define a simple route
+async def homepage(request):
+    return JSONResponse({"message": "Hello, SGS.core!"})
+
 # Define the routes
 routes = [
-    Route("/process", handle_request, methods=["POST"])
+    Route("/", homepage), Route("/process", handle_request, methods=["POST"])
 ]
 
+# Create the Starlette app
+# app = Starlette(routes=routes)
 # Create the Starlette app
 app = Starlette(routes=routes)
 

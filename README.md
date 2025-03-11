@@ -9,3 +9,7 @@ The text outlines the development process, starting with a formal framework for 
 Additionally, the publication proposes a roadmap for the implementation of SGS.ai, breaking down tasks into manageable steps and defining the roles of various components within the system. The goals of the project include not only constructing a functional Self-Generative System but also establishing a standard for collaborative problem-solving between humans and AI.
 
 The text concludes with a call to re-evaluate copyright laws in light of AI contributions and encourages further exploration of the implications of human-AI collaboration. Overall, the project represents a significant step toward redefining creativity and innovation in the age of artificial intelligence.
+
+# References
+1. Self Generative Systems (SGS) and Its Integration with AI Models Author: Alex Mylnikov Authors Info & Claims
+AISNS '24: Proceedings of the 2024 2nd International Conference on Artificial Intelligence, Systems and Network Security Pages 345 - 354 (https://doi.org/10.1145/3714334.3714392)

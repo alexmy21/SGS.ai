@@ -1,0 +1,6 @@
+sgs_id: "sgs_core"
+transformer: "C"
+processor: "ping_redis"
+input_sha_id: "input_sha_id_123"
+processor_sha_id: "processor_sha_id_456"
+output_sha_id: "output_sha_id_789"

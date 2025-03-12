@@ -4,14 +4,11 @@ FROM python:3.12-slim
 # Set the working directory
 WORKDIR /app
 
-# Install uv for dependency management
-RUN pip install uv
+# Copy the wheel file
+COPY dist/sgs_ai-0.1.0-py3-none-any.whl .
 
-# Copy the requirements file
-COPY pyproject.toml .
-
-# Install dependencies system-wide using uv
-RUN uv pip install --system -r pyproject.toml
+# Install the wheel file
+RUN pip install sgs_ai-0.1.0-py3-none-any.whl
 
 # Copy the SGS.core source code
 COPY . .
@@ -20,4 +17,4 @@ COPY . .
 EXPOSE 8000
 
 # Start the SGS.core server
-CMD ["uvicorn", "core_server:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python", "sgs_core/core_server.py"]

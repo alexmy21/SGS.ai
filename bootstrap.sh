@@ -2,8 +2,8 @@
 
 # Define container images
 SGS_CORE_IMAGE="sgs-core:latest"  # Custom image for SGS.core
-REDIS_IMAGE="redis:latest"        # Official Redis image
-HDF5_IMAGE="hdfgroup/hdf5:latest" # Official HDF5 image (from Docker Hub)
+REDIS_IMAGE="sgs-redis:latest"    # Custom image for Redis
+HDF5_IMAGE="sgs-hdf5:latest"      # Custom image for HDF5
 
 # Generate a unique installation ID using the latest GitHub commit SHA
 INSTALLATION_ID=$(curl -fsSL https://api.github.com/repos/alexmy21/SGS.ai/commits/main | grep -oP '"sha": "\K[0-9a-f]+' | head -n 1)
@@ -88,9 +88,34 @@ else
     SERVICE_PORT=8888  # Default service port
 fi
 
+# Check if port 5000 is in use (for HDF5)
+if check_port 5000; then
+    echo "Port 5000 is already in use."
+    echo "You can either:"
+    echo "1. Stop the conflicting process and let the script use port 5000."
+    echo "2. Use a different port for the HDF5 service."
+    read -p "Enter your choice (1 or 2): " choice
+
+    case $choice in
+        1)
+            echo "Stopping conflicting process..."
+            lsof -ti :5000 | xargs kill -9
+            ;;
+        2)
+            read -p "Enter a new port for HDF5 (e.g., 5001): " HDF5_PORT
+            ;;
+        *)
+            echo "Invalid choice. Exiting."
+            exit 1
+            ;;
+    esac
+else
+    HDF5_PORT=5000  # Default HDF5 port
+fi
+
 # Create the Pod
 echo "Creating Pod $POD_NAME..."
-podman pod create --name $POD_NAME -p $REDIS_PORT:6379 -p $SERVICE_PORT:8888
+podman pod create --name $POD_NAME -p $REDIS_PORT:6379 -p $SERVICE_PORT:8888 -p $HDF5_PORT:5000
 
 # Build the SGS.core container
 echo "Building SGS.core container..."
@@ -100,14 +125,17 @@ podman build -t $SGS_CORE_IMAGE -f sgs_core/Dockerfile .
 echo "Starting SGS.core container..."
 podman run -d --pod $POD_NAME --name $SGS_CORE_CONTAINER $SGS_CORE_IMAGE
 
-# Start the Redis container with custom modules and config
-echo "Starting Redis container with custom modules and config..."
-podman run -d --pod $POD_NAME --name $REDIS_CONTAINER \
-    -v $(pwd)/.redis/redis.conf:/usr/local/etc/redis/redis.conf \
-    -v $(pwd)/.redis/libredis-roaring.so:/usr/local/lib/redis/libredis-roaring.so \
-    -v $(pwd)/.redis/redisearch.so:/usr/local/lib/redis/redisearch.so \
-    -v $(pwd)/.redis/redisgraph.so:/usr/local/lib/redis/redisgraph.so \
-    $REDIS_IMAGE redis-server /usr/local/etc/redis/redis.conf
+# Build the Redis container
+echo "Building Redis container..."
+podman build -t $REDIS_IMAGE -f .redis/Dockerfile .
+
+# Start the Redis container
+echo "Starting Redis container..."
+podman run -d --pod $POD_NAME --name $REDIS_CONTAINER $REDIS_IMAGE
+
+# Build the HDF5 container
+echo "Building HDF5 container..."
+podman build -t $HDF5_IMAGE -f .hdf5/Dockerfile .hdf5
 
 # Start the HDF5 container
 echo "Starting HDF5 container..."

@@ -2,7 +2,6 @@
 import yaml
 from ping_redis import ping_redis
 
-
 class UniversalController:
     def __init__(self):
         self.processors = {

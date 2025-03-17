@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  redis:
+    image: alexmy/redis_custom:7.0.15
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+  hdf5:
+    image: alexmy/hdf5
+    ports:
+      - "5000:5000"  # Map port 5000 for the Flask server
+    restart: unless-stopped
+
+  sgs_core:
+    image: alexmy/sgs.ai
+    ports:
+      - "8000:8000"  # Map port 5000 for the Flask server
+    depends_on:
+      - redis
+      - hdf5
+    restart: unless-stopped

@@ -7,9 +7,11 @@ requires-python = ">=3.12"
 dependencies = [
     "flask>=3.1.0",
     "h5py>=3.13.0",
+    "julia>=0.6.2",
     "numpy>=2.2.3",
     "pyyaml>=6.0.2",
     "redis>=5.2.1",
+    "requests>=2.32.3",
     "starlette>=0.46.0",
     "uvicorn>=0.34.0",
 ]

@@ -2,14 +2,14 @@ from starlette.applications import Starlette
 from starlette.responses import JSONResponse
 from starlette.routing import Route
 import uvicorn
-from universal_controller import UniversalController
+from u_controller import Controller
 
 
 
 # Define the request handler
 async def handle_request(request):
     # Initialize the Universal Controller
-    controller = UniversalController()
+    controller = Controller()
     # Parse the YAML request
     yaml_request = await request.body()
     print(yaml_request)
@@ -22,11 +22,6 @@ async def handle_request(request):
         return JSONResponse(result)
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)})
-
-# # Define the routes
-# routes = [
-#     Route("/process", handle_request, methods=["POST"])
-# ]
 
 # Define a simple route
 async def homepage(request):

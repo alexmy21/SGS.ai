@@ -10,7 +10,7 @@ HDF5_FILE_PATH = "data.h5"
 @app.route('/read', methods=['GET'])
 def read_hdf5():
     file_path = request.args.get('file', HDF5_FILE_PATH)  # Use default file if not provided
-    dataset = request.args.get('dataset', "demo_dataset")  # Use default dataset if not provided
+    dataset = request.args.get('dataset', "data.h5")  # Use default dataset if not provided
     try:
         with h5py.File(file_path, 'r') as f:
             if dataset not in f:

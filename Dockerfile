@@ -46,10 +46,6 @@ RUN python boot_julia.py
 # # Stage 2: Runtime environment
 # FROM python:3.12-slim
 
-# # Copy only the necessary files from the build stage
-# COPY --from=build /usr/local/bin/julia /usr/local/bin/julia
-# COPY --from=build /app /app
-
 # Set the working directory
 WORKDIR /app
 

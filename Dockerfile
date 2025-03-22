@@ -29,15 +29,11 @@ WORKDIR /app
 # Debug: List the contents of the build context
 RUN ls -l /app
 
-# Copy the tarball into the working directory
+# Copy the HllSets directory to the working directory
 COPY sgs_core/HllSets /app/HllSets
 
-# Debug: List the contents of /app after copying
-RUN ls -R /app
-
-# Install the tarball as a Julia package
+# Install HllSets as a Julia package
 RUN julia -e 'using Pkg; Pkg.develop(path="/app/HllSets")'
-# RUN julia -e 'using Pkg; Pkg.activate("/app/HllSets"); Pkg.instantiate(); Pkg.precompile(); Pkg.add("DataFrames")'
 #==============================================================================
 
 # Copy the SGS.core source code
@@ -48,10 +44,6 @@ COPY pyproject.toml .
 
 # Install the pyproject file
 RUN uv pip install -r pyproject.toml --all-extras --system
-
-# Install Julia dependencies
-# COPY sgs_core/src/sets32.jl /app/src/sets32.jl
-# COPY sgs_core/src/constants.jl /app/src/constants.jl
 
 RUN python boot_julia.py
 

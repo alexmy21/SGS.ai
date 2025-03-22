@@ -1,9 +1,10 @@
 #!/bin/bash
 
-# filepath: /home/alexmy/SGS/SGS.ai/build.sh
+# Get the current working directory
+CURRENT_DIR=$(pwd)
 
 # Step 1: Navigate to the directory containing the Dockerfile for sgs.ai
-cd /home/alexmy/SGS/SGS.ai || { echo "Directory /path/to/sgs.ai not found"; exit 1; }
+cd "$CURRENT_DIR" || { echo "Directory $CURRENT_DIR not found"; exit 1; }
 
 # Step 2: Build the sgs.ai Docker image
 echo "Building the sgs.ai Docker image..."
@@ -14,7 +15,7 @@ echo "Pushing the sgs.ai image to Docker Hub..."
 docker push alexmy/sgs.ai:latest || { echo "Failed to push the sgs.ai image"; exit 1; }
 
 # Step 4: Navigate to the directory containing the docker-compose.yml file
-cd /home/alexmy/SGS/SGS.ai || { echo "Directory /home/alexmy/SGS/SGS.ai not found"; exit 1; }
+cd "$CURRENT_DIR" || { echo "Directory $CURRENT_DIR not found"; exit 1; }
 
 # Step 5: Bring down any running containers
 echo "Stopping and removing existing containers..."

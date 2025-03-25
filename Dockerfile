@@ -43,9 +43,6 @@ COPY sgs_core/*.py .
 # Run boot_julia.py during the build
 RUN python boot_julia.py
 
-# # Stage 2: Runtime environment
-# FROM python:3.12-slim
-
 # Set the working directory
 WORKDIR /app
 

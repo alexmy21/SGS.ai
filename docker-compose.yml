@@ -15,8 +15,6 @@ services:
   sgs_core:
     image: alexmy/sgs.ai
     ports:
-      - "8000:8000"  # Map port 5000 for the Flask server
-    depends_on:
-      - redis
-      - hdf5
+      - "8000:8000"  # Map port 8000 for the SGS Core server
     restart: unless-stopped
+    # Podman doesn't support `depends_on`, so ensure Redis and HDF5 are started first.

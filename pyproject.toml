@@ -9,6 +9,7 @@ dependencies = [
     "h5py>=3.13.0",
     "julia>=0.6.2",
     "numpy>=2.2.3",
+    "openai>=1.69.0",
     "pyyaml>=6.0.2",
     "redis>=5.2.1",
     "requests>=2.32.3",

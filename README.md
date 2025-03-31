@@ -16,3 +16,5 @@ AISNS '24: Proceedings of the 2024 2nd International Conference on Artificial In
 2. https://github.com/alexmy21/SGS.ai/blob/main/.PDF/Thoughts%20on%20Collaborative%20Development_1.pdf
 3. https://github.com/alexmy21/SGS.ai/blob/main/.PDF/Thoughts%20on%20Collaborative%20Development_2.pdf
 4. https://linuxiac.com/how-to-install-virtualbox-on-fedora-linux/
+5. https://github.com/cair/tmu/tree/main
+6. https://github.com/markf94/QML_Thesis.git

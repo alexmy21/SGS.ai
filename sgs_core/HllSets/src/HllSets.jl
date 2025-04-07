@@ -14,15 +14,7 @@
 # Last, corrections for systematic bias are added, one multiplicative and one
 # additive factor.
 # To make the observations uniformly distributed integers, we hash them.
-
-# We made sugnificant changes to the original implementation:
-# - We use a BitVector instead of a UInt8 for the counters
-# - We implemented additional operators to support set operations, like union (union), intersection(intersect), difference(diff), 
-#   and equality (isequal). Now they work the same way as they work for sets
-# - we added a function to convert the BitVector to a UInt64 (dump) and vice versa (restore)
-# - We added a function to calculate the delta between two HLL sets (delta)
-# - We added a function to calculate SHA1 of the counts as a string
-# - We also renamed some of the original operators to be more consistent with HyperLogLog terminology
+# =====================================================================================
 # """
 # MIT License
 
@@ -49,9 +41,21 @@
 
 # https://github.com/jakobnissen/Probably.jl/blob/master/src/hyperloglog/hyperloglog.jl
 
-# I borrowed a lot from this project, but also made a lot of changes, 
-# so, for all errors do not blame the original author but me.
 # """
+# =======================================================================================
+
+
+# We made sugnificant changes to the original implementation:
+# - We use a BitVector instead of a UInt8 for the counters
+# - We implemented additional operators to support set operations, like union (union), intersection(intersect), difference(diff), 
+#   and equality (isequal). Now they work the same way as they work for sets
+# - we added a function to convert the BitVector to a UInt64 (dump) and vice versa (restore)
+# - We added a function to calculate the delta between two HLL sets (delta)
+# - We added a function to calculate SHA1 of the counts as a string
+# - We also renamed some of the original operators to be more consistent with HyperLogLog terminology
+
+# We borrowed a lot from this project, but also made a lot of changes, 
+# so, for all errors do not blame the original author but me.
 
 module HllSets
 

@@ -24,3 +24,4 @@ AISNS '24: Proceedings of the 2024 2nd International Conference on Artificial In
 10. https://github.com/PatrickKalkman/djin.git
 11. https://github.com/datalev001/distillation/
 12. https://acagamic.medium.com/academic-reviewers-cant-actually-tell-when-ai-writes-research-papers-and-that-changes-everything-93b1ec4c50a0
+13. https://pub.towardsai.net/beyond-simple-inversion-building-and-applying-inverse-neural-networks-73b811da3cdc

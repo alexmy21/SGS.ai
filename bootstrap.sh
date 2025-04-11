@@ -1,15 +1,32 @@
 #!/bin/bash
 
-# Stop and remove existing containers (if any)
-echo "Stopping and removing existing containers..."
-docker compose down
+# SGS.ai Podman Compose Setup
+# Usage: bash <(curl -s https://raw.githubusercontent.com/alexmy21/SGS.ai/main/setup.sh)
 
-# Build and start the containers
-echo "Building and starting containers..."
-docker compose up -d
+set -euo pipefail
 
-# Print status
-echo "Containers are up and running!"
-echo "Redis: localhost:6379"
-echo "HDF5 API: http://localhost:5000"
-echo "SGS Core: http://localhost:8888"
+# Configuration
+COMPOSE_URL="https://raw.githubusercontent.com/alexmy21/SGS.ai/main/docker-compose.yml"
+PROJECT_NAME="SGS.ai"
+
+# Check for required commands
+for cmd in podman podman-compose curl; do
+    if ! command -v $cmd &> /dev/null; then
+        echo "Error: $cmd is not installed"
+        exit 1
+    fi
+done
+
+# Cleanup existing containers
+echo "Removing any existing containers..."
+podman-compose -f <(curl -s "$COMPOSE_URL") down || true
+podman rm -f $(podman ps -aq --filter "label=io.podman.compose.project=$PROJECT_NAME") 2>/dev/null || true
+
+# Start new containers
+echo "Starting containers..."
+podman-compose -f <(curl -s "$COMPOSE_URL") up -d
+
+echo ""
+echo "SGS.ai setup complete!"
+echo "Containers are running in detached mode."
+echo "Use 'podman-compose -f <(curl -s $COMPOSE_URL) logs' to view logs"

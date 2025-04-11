@@ -1,5 +1,7 @@
 # SGA.ai - Collaborative Development with DeepSeek Assistance
 
+## Introduction
+
 This project is a result of the collaborative development of a Self-Generative System (SGS.ai), inspired by John von Neumann's pioneering concepts of self-reproducing systems. The project represents a unique partnership between a human developer, Alex Mylnikov, and DeepSeek, an AI assistant. The unedited dialogue between them illustrates how human creativity and AI capabilities can synergize to address complex challenges.
 
 The introduction highlights the importance of transparency in documenting this collaboration, emphasizing the verbatim presentation of DeepSeek's contributions to showcase the potential of human-AI interaction in both creative and technical fields. The publication aims to stimulate discussions around human-AI collaboration, intellectual property, and the ethical implications of AI in creative domains.
@@ -9,6 +11,14 @@ The text outlines the development process, starting with a formal framework for 
 Additionally, the publication proposes a roadmap for the implementation of SGS.ai, breaking down tasks into manageable steps and defining the roles of various components within the system. The goals of the project include not only constructing a functional Self-Generative System but also establishing a standard for collaborative problem-solving between humans and AI.
 
 The text concludes with a call to re-evaluate copyright laws in light of AI contributions and encourages further exploration of the implications of human-AI collaboration. Overall, the project represents a significant step toward redefining creativity and innovation in the age of artificial intelligence.
+
+## SGS.ai project
+
+
+
+### Formal model
+
+
 
 # References
 1. Self Generative Systems (SGS) and Its Integration with AI Models Author: Alex Mylnikov Authors Info & Claims
@@ -25,3 +35,8 @@ AISNS '24: Proceedings of the 2024 2nd International Conference on Artificial In
 11. https://github.com/datalev001/distillation/
 12. https://acagamic.medium.com/academic-reviewers-cant-actually-tell-when-ai-writes-research-papers-and-that-changes-everything-93b1ec4c50a0
 13. https://pub.towardsai.net/beyond-simple-inversion-building-and-applying-inverse-neural-networks-73b811da3cdc
+14. https://medium.com/@jpark7/finally-a-clear-derivation-of-the-vae-kl-loss-4cb38d2e47b3
+15. https://levelup.gitconnected.com/writing-better-shell-scripts-with-lua-6a3155256e5f
+16. https://medium.com/data-science-collective/attention-based-neural-network-distillation-enhancing-performance-through-learned-weighted-c4efa612b257
+17. https://pub.towardsai.net/adaptive-multi-teacher-distillation-for-enhanced-supervised-learning-e70062acce7e
+18. https://medium.com/data-science-collective/building-smarter-portfolios-with-dynamic-programming-and-reinforcement-learning-and-dynamic-0de5e7d7fd11

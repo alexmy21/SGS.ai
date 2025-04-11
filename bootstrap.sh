@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# SGS.ai Podman Compose Setup
-# Usage: bash <(curl -s https://raw.githubusercontent.com/alexmy21/SGS.ai/main/setup.sh)
+# SGS.ai Podman Compose bootstrap script
+# Usage: bash <(curl -s https://raw.githubusercontent.com/alexmy21/SGS.ai/main/bootstrap.sh)
 
 set -euo pipefail
 

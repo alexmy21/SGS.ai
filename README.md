@@ -12,6 +12,8 @@ Additionally, the publication proposes a roadmap for the implementation of SGS.a
 
 The text concludes with a call to re-evaluate copyright laws in light of AI contributions and encourages further exploration of the implications of human-AI collaboration. Overall, the project represents a significant step toward redefining creativity and innovation in the age of artificial intelligence.
 
+**SGS.ai is an open-source project, and like any open initiative, it thrives on collaboration. Currently, DeepSeek is the sole contributor to SGS.ai. I would be thrilled to see participation from other intellectuals. I am open to any form of collaboration, provided that SGS.ai remains an open-source project.**
+
 ## SGS.ai project
 
 
@@ -40,3 +42,4 @@ AISNS '24: Proceedings of the 2024 2nd International Conference on Artificial In
 16. https://medium.com/data-science-collective/attention-based-neural-network-distillation-enhancing-performance-through-learned-weighted-c4efa612b257
 17. https://pub.towardsai.net/adaptive-multi-teacher-distillation-for-enhanced-supervised-learning-e70062acce7e
 18. https://medium.com/data-science-collective/building-smarter-portfolios-with-dynamic-programming-and-reinforcement-learning-and-dynamic-0de5e7d7fd11
+19. https://medium.com/@shawn.stanford/the-bath-fitters-of-cobol-9932453bf185

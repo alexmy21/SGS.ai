@@ -12,14 +12,300 @@ Additionally, the publication proposes a roadmap for the implementation of SGS.a
 
 The text concludes with a call to re-evaluate copyright laws in light of AI contributions and encourages further exploration of the implications of human-AI collaboration. Overall, the project represents a significant step toward redefining creativity and innovation in the age of artificial intelligence.
 
+# SGS.ai project
+
 **SGS.ai is an open-source project, and like any open initiative, it thrives on collaboration. Currently, DeepSeek is the sole contributor to SGS.ai. I would be thrilled to see participation from other intellectuals. I am open to any form of collaboration, provided that SGS.ai remains an open-source project.**
 
-## SGS.ai project
+## Formal model
 
+SGS.ai is built on John von Neumann's concept of self-reproducing automata. We can conceptualize it as a system comprising four key components:
+ 1. **Universal Constructor (A)**
+ 2. **Universal Copier (B)**
+ 3. **Universal Controller (C)**
+ 4. **Universal Interface to the Environment (D)**, akin to a universal perceptron (or working automata).
 
+### Tramsformers and their rolles
+- A: Universal Constructor 
+    - Role: Constructs new entities (HllSets, relationships, etc.).
+    - Operation: A ( Y ) → Z, where  Y is the input and  Z is the constructed output.
+- B: Universal Copier 
+    - Role: Copies entities.
+    - Operation: B ( Y ) → Z, where  Y is the input and  Z is the copied output.
+- C: Universal Controller 
+    - Role: Orchestrates the operations of the other transformers (A, B, D).
+    - Operation: C ( X , Y ) → X ( Y ) , where  X is the transformer (A, B, or D) and  Y is the input.
+- D: Universal Interface to Environment (Universal Perceptron) 
+    - Role: Interacts with the environment, gathers information, and provides feedback.
+    - Operation: D ( Y ) → Z, where  Y is the input and  Z is the processed output.
 
-### Formal model
+### Self-Reproduction Loop
 
+#### Step 1: Copying
+- The Universal Controller (C) forces the Universal Copier (B) to copy each transformer and its associated entities.
+- This creates a new set of transformers and entities that are copies of the originals.
+
+Formally:
+- C ( B, B ) → B ( B ) → B′ 
+- C ( B, A ) → B ( A ) → A′ 
+- C ( B, C ) → B ( C ) → C′ 
+- C ( B, D ) → B ( D ) → D′ ​
+
+#### Step 2: Mutating 
+- The Universal Controller (C) forces the Universal Interface to Environment (D) to mutate the copied transformers and entities.
+- This introduces variations in the copied entities, enabling evolution.
+
+Formally:
+- C ( D, B′ ) → D ( B′ ) → B′′ 
+- C ( D, A′ ) → D ( A′ ) → A′′ 
+- C ( D, C′ ) → D ( C′ ) → C′′ 
+- C ( D, D′ ) → D ( D′ ) → D′′ 
+
+#### Step 3: Committing 
+- The Universal Controller (C) forces the Universal Constructor (A) to commit the mutated transformers and entities.
+- This integrates the new entities into the system, completing the self-reproduction loop.
+
+Formally:
+- C ( A, B ′ ′ ) → A ( B′′ ) → B 
+- C ( A, A ′ ′ ) → A ( A′′ ) → A 
+- C ( A, C ′ ′ ) → A ( C′′ ) → C 
+- C ( A, D ′ ′ ) → A ( D′′ ) → D
+- C ( C, ( A, B, C, D ) ) → C ( A, B, C, D ) → SGS.ai
+
+This ensures that the system is fully assembled and ready for use after each regeneration.
+
+### Controllable Destruction (Garbage Collection) 
+Garbage collection is performed outside the self-reproduction loop to remove entities that are no longer needed. This ensures that the system remains efficient and does not accumulate unnecessary data.
+#### Garbage Collection Process 
+- Identify Unused Entities:
+    - Entities that are no longer referenced by any transformer or relationship are marked for removal.
+- Remove Entities:
+    - The garbage collector removes the marked entities from the system.
+
+## HLLSet Algebra Module
+
+### Overview
+The HllSets.jl module provides an implementation of HyperLogLog (HLL) set algebra with enhanced functionality for set operations. This implementation is based on the original work by Flajolet et al. with improvements from Google's research, and incorporates significant modifications from Jakob Nybo Nissen's Probably.jl implementation.
+
+#### Key Features
+- HyperLogLog Cardinality Estimation: Probabilistic counting of unique elements with high accuracy
+
+- Set Operations: Full algebra support including:
+
+    - Union (union, union!)
+
+    - Intersection (intersect)
+
+    - Difference (diff, set_comp)
+
+    - Symmetric difference (set_xor)
+
+    - Change detection (set_added, set_deleted)
+
+- Similarity Metrics:
+
+    - Jaccard similarity (match)
+
+    - Cosine similarity (cosine)
+
+- Serialization:
+
+    - Binary tensor conversion (to_binary_tensor)
+
+    - String representation (tensor_to_string)
+
+    - Restoration from serialized forms (restore!)
+
+### Usage Examples
+Basic Operations
+
+```
+using HllSets
+
+# Create two HLL sets
+h1 = HllSet(10)  # 2^10 = 1024 registers
+h2 = HllSet(10)
+
+# Add elements
+add!(h1, "apple")
+add!(h1, ["banana", "cherry", "date"])
+
+add!(h2, "cherry")
+add!(h2, ["date", "elderberry"])
+
+# Estimate cardinality
+count(h1)  # Returns approximate unique count
+
+# Set operations
+h_union = union(h1, h2)
+h_intersect = intersect(h1, h2)
+changes = diff(h1, h2)  # Returns (DEL, RET, NEW) tuple
+```
+
+Similarity Comparison
+```
+# Calculate similarity metrics
+jaccard_similarity = match(h1, h2)  # Percentage
+cosine_similarity = cosine(h1, h2)  # Float between 0 and 1
+```
+
+### Why HyperLogLog in SGS.ai?
+
+HLLSets provide the perfect balance of accuracy and efficiency for SGS.ai's large-scale data processing needs:
+
+- Memory-efficient: Count millions of unique elements in KBs of memory
+
+- Real-time analytics: Process streaming data with constant-time operations
+
+- Set semantics: Our enhanced algebra enables complex relationship analysis
+
+- Error-bound: Predictable 1-2% error rate for cardinality estimation
+
+```    
+# Example: Track unique users across massive dataset
+user_actions = HllSet(12)  # 4096 registers (~1.5KB memory)
+for event in data_stream
+    add!(user_actions, event.user_id)
+end
+println("Unique users: ", count(user_actions))  # ~0.8% error
+```
+
+Key Enhancements vs Original Implementation
+Feature            |	Probably.jl	| SGS.ai HLLSet	  | Benefit
+-------------------|----------------|-----------------|--------
+Set Operations	   | ❌ None	       |✅ Full algebra	| Enables A∩B, A-B, etc
+Change Detection   | ❌ No	       |✅ Added/Deleted	| Track set evolution
+Similarity Metrics | ❌ No	       |✅ Jaccard/Cosine| Compare sets
+Serialization	   | ❌ Basic	   |✅ Tensor/String	| Better integration
+Memory Efficiency  | 64-bit	        | 32-bit counters |	50% reduction
+
+## Development Development Environment Setup
+### All Platforms (Required Tools)
+1. Podman (Docker-compatible alternative):
+```
+# Install podman-compose separately
+pip install podman-compose
+```
+2. Julia (Must use official binaries):
+```
+ # Windows/macOS: Download from https://julialang.org/downloads/
+# Linux (recommended method):
+curl -fsSL https://install.julialang.org | sh
+```
+
+### Fedora 40 (Recommended)
+
+```
+# Podman and dependencies
+sudo dnf install -y podman podman-docker podman-plugins
+sudo systemctl enable --now podman.socket
+
+# Python ecosystem
+sudo dnf install -y python3-pip python3-venv
+python -m pip install --user podman-compose
+
+# Julia (official repo)
+sudo dnf install -y julia
+```
+
+### Ubuntu/Debian
+
+```
+# Podman
+sudo apt install -y podman podman-compose
+
+# Python
+sudo apt install -y python3-pip python3-venv
+
+# Julia (official packages)
+sudo apt install -y wget
+wget https://julialang-s3.julialang.org/bin/linux/x64/1.10/julia-1.10.0-linux-x86_64.tar.gz
+tar -xvzf julia-*.tar.gz -C /opt/
+sudo ln -s /opt/julia-*/bin/julia /usr/local/bin/julia
+```
+
+### Windows (WSL2 Recommended)
+1. Install Windows Subsystem for Linux:
+
+```
+wsl --install
+```
+
+2. In WSL Ubuntu:
+
+```
+# Follow Ubuntu instructions above
+```
+
+3. For native Windows:
+
+```
+# Podman
+winget install -e --id RedHat.Podman
+
+# Julia
+winget install -e --id Julia.Julia
+```
+
+### macOS
+```
+# Podman
+brew install podman podman-compose
+podman machine init
+podman machine start
+
+# Julia
+brew install --cask julia
+```
+
+### Verification
+Check all tools are properly installed:
+```
+podman --version  # Should show 4.0+
+podman-compose --version  # Should show 1.0+
+julia -e 'println("Julia $(VERSION)")'  # Should be 1.9+
+```
+
+#### Post-Installation
+1. Podman Configuration (Optional):
+```
+# Enable rootless mode (recommended)
+sudo usermod --add-subuids 100000-165535 --add-subgids 100000-165535 $USER
+```
+
+2. Julia Packages:
+```
+# Run in Julia REPL
+using Pkg
+Pkg.add(["SHA", "JSON3"])
+```
+
+## Quick start
+```
+bash <(curl -s https://raw.githubusercontent.com/alexmy21/SGS.ai/main/bootstrap.sh)
+```
+
+### Testing by running requests to SGS.ai `core_server.py`
+
+```
+#!/bin/bash
+
+BASE_URL="http://localhost:8000"
+
+echo "Testing connection..."
+curl -X GET "$BASE_URL/" -H "Content-Type: application/json" -w "\nStatus: %{http_code}\n\n"
+
+echo "Testing HDF5 processor..."
+curl -X POST "$BASE_URL/process" \
+     -H "Content-Type: application/json" \
+     -d '{"transformer":"C","processor":"call_hdf5","input_sha_id":"input_sha_id_123","processor_sha_id":"processor_sha_id_456","output_sha_id":"output_sha_id_789"}' \
+     -w "\nStatus: %{http_code}\n\n"
+
+echo "Testing Redis processor..."
+curl -X POST "$BASE_URL/process" \
+     -H "Content-Type: application/json" \
+     -d '{"transformer":"C","processor":"ping_redis","input_sha_id":"input_sha_id_123","processor_sha_id":"processor_sha_id_456","output_sha_id":"output_sha_id_789"}' \
+     -w "\nStatus: %{http_code}\n"
+```
 
 
 # References

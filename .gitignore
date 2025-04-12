@@ -151,6 +151,7 @@ venv.bak/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+key_api.txt
 
 # Pyre type checker
 .pyre/
@@ -170,3 +171,4 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+key_api.txt

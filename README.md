@@ -178,7 +178,7 @@ Similarity Metrics | ❌ No	       |✅ Jaccard/Cosine| Compare sets
 Serialization	   | ❌ Basic	   |✅ Tensor/String	| Better integration
 Memory Efficiency  | 64-bit	        | 32-bit counters |	50% reduction
 
-## Development Development Environment Setup
+## Development Environment Setup
 ### All Platforms (Required Tools)
 1. Podman (Docker-compatible alternative):
 ```

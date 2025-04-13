@@ -18,10 +18,10 @@ The text concludes with a call to re-evaluate copyright laws in light of AI cont
 
 ## Core principles
 ### Foundational principles:
-- Globally stateless and content based globally unique identification for everything;
-- Immutable;
-- Idempotent;
-- Metadata driven.
+- **Globally stateless, content-based identification** for all entities.
+- **Immutability** to ensure consistency.
+- **Idempotency** for reliable operations.
+- **Metadata-driven design** to isolate user customizations.
 
 ### Self-Generative:
 - The system generates its own updates, optimizations, and extensions based on user needs and AI-driven insights.

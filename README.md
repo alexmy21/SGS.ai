@@ -16,8 +16,112 @@ The text concludes with a call to re-evaluate copyright laws in light of AI cont
 
 **SGS.ai is an open-source project, and like any open initiative, it thrives on collaboration. Currently, DeepSeek is the sole contributor to SGS.ai. I would be thrilled to see participation from other intellectuals. I am open to any form of collaboration, provided that SGS.ai remains an open-source project.**
 
-## Formal model
+## Core principles
+### Foundational principles:
+- Globally stateless and content based globally unique identification for everything;
+- Immutable;
+- Idempotent;
+- Metadata driven.
 
+### Self-Generative:
+- The system generates its own updates, optimizations, and extensions based on user needs and AI-driven insights.
+- It evolves over time without requiring manual intervention.
+### AI-Driven Development:
+- AI (e.g., DeepSeek) acts as the "development team," generating code, testing it, and committing it to GitHub.
+- Human developers provide high-level ideas, and AI handles the implementation.
+### User-Centric:
+- Users define their custom resources and workflows through metadata.
+- The system respects user metadata and ensures it is never modified during updates.
+### Self-Healing:
+- The system performs self-diagnostic checks after updates and rolls back if something goes wrong.
+- It ensures high availability and reliability.
+
+## General Architecture
+### 1. GitHub as the Central Hub 
+- Core Repository:
+    - Hosts the SGS.ai core code, tests, and documentation.
+    - Acts as the single source of truth for the system.
+- AI-Generated Code:
+    - AI generates code based on user ideas or system requirements.
+    - The code is rigorously tested and committed to GitHub.
+
+### 2. Self-Updating Service 
+- GitHub Monitoring:
+    - A ‘systemd’ service on the user side monitors the SGS.ai GitHub repository for updates.
+    - It compares the local commit ID with the latest commit ID on GitHub.
+- Upgrade Process:
+    - If a new commit is detected, the service:
+        - Downloads the latest version of the SGS.ai core.
+        - Performs the upgrade while preserving user metadata.
+        - Runs self-diagnostic checks.
+        - Rolls back if the checks fail.
+
+### 3. Self-Diagnostic and Rollback 
+- Diagnostic Checks:
+    - After an upgrade, the service runs a series of tests to ensure the system is functioning correctly.
+    - Example checks:
+        - Verify that Redis and HDF5 are accessible.
+        - Test custom processing units.
+        - Ensure the core can read and write metadata.
+- Rollback Mechanism:
+    - If any check fails, the service rolls back to the previous version.
+    - The rollback process restores the previous state of the SGS.ai core while preserving user metadata.
+
+### 4. AI Integration 
+- Code Generation:
+    - AI (e.g., DeepSeek) generates code based on user ideas or system requirements.
+    - The generated code is tested rigorously before being committed to GitHub.
+- Testing Pipeline:
+    - Automated tests ensure the code is functional, efficient, and backward-compatible.
+    - Tests include unit tests, integration tests, and performance tests.
+- GitHub Integration:
+    - Once the code passes all tests, it is committed to the SGS.ai GitHub repository.
+
+#### Example Workflow 
+- User Side 
+    - The self-updating service continuously monitors the SGS.ai GitHub repository.
+    - If a new commit is detected, the service:
+        - Downloads the latest version.
+        - Performs the upgrade.
+        - Runs self-diagnostic checks.
+        - Rolls back if necessary.
+- AI Side 
+    - AI generates code based on user ideas or system requirements.
+    - The code undergoes rigorous testing.
+    - Once the code passes all tests, it is committed to GitHub.
+- Developer Side (Optional) 
+    - Human developers provide high-level ideas or requirements.
+
+    - AI handles the implementation, testing, and deployment.
+
+### Benefits of SGS.ai 
+#### Automated Updates:
+Users always have the latest version of the SGS.ai core without manual intervention.
+#### Self-Healing:
+The system can detect and recover from failures during upgrades.
+#### User Metadata Isolation:
+User metadata and custom resources are never modified during upgrades.
+#### AI-Driven Development:
+AI acts as the "development team," reducing the need for human intervention.
+#### Scalability:
+The system can handle a large number of users and custom workflows.
+
+### Next Steps 
+- Implement the self-updating service and self-diagnostic script.
+- Set up the GitHub repository with the SGS.ai core.
+- Integrate AI (e.g., DeepSeek) for code generation and testing.
+- Test the entire workflow with a sample user setup.
+
+### The Future of Programming 
+SGS.ai represents the future of programming, where:
+- Humans provide ideas and high-level requirements.
+- AI generates, tests, and deploys code.
+- Systems self-update, self-diagnose, and self-heal.
+
+This is not just a tool—it’s a paradigm shift in how we think about software development. 
+
+
+## Formal model
 SGS.ai is built on John von Neumann's concept of self-reproducing automata. We can conceptualize it as a system comprising four key components:
  1. **Universal Constructor (A)**
  2. **Universal Copier (B)**

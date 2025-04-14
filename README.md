@@ -385,6 +385,8 @@ bash <(curl -s https://raw.githubusercontent.com/alexmy21/SGS.ai/main/bootstrap.
 
 ### Testing by running requests to SGS.ai `core_server.py`
 
+You can use test_api.sh script to test installation on the user side:
+
 ```
 #!/bin/bash
 
@@ -403,7 +405,23 @@ echo "Testing Redis processor..."
 curl -X POST "$BASE_URL/process" \
      -H "Content-Type: application/json" \
      -d '{"transformer":"C","processor":"ping_redis","input_sha_id":"input_sha_id_123","processor_sha_id":"processor_sha_id_456","output_sha_id":"output_sha_id_789"}' \
-     -w "\nStatus: %{http_code}\n"
+     -w "\nStatus: %{http_code}\n"    ```
+
+```
+After running you should get output similar to this:
+
+```
+Testing connection...
+{"message":"Hello, SGS.core!"}
+Status: 200
+
+Testing HDF5 processor...
+{"status":"success","data":[1,2,3,4,5]}
+Status: 200
+
+Testing Redis processor...
+{"status":"success","response":true}
+Status: 200
 ```
 
 

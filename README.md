@@ -4,12 +4,12 @@
 
 This project is a result of the collaborative development of a Self-Generative System (SGS.ai), inspired by John von Neumann's pioneering concepts of self-reproducing systems. 
 
-We recorded collaborative development in publications [1, 2] (see References and .PDF directory). 
+We recorded collaborative development in publications [2, 3] (see References and .PDF directory). 
 
 The project represents a unique partnership between a human developer, Alex Mylnikov, and DeepSeek, an AI assistant.
 It also highlights the importance of transparency in documenting this collaboration, emphasizing the verbatim presentation of DeepSeek's contributions to showcase the potential of human-AI interaction in both creative and technical fields. 
 
-The publications [1, 2] aim to stimulate discussions around human-AI collaboration, intellectual property, and the ethical implications of AI in creative domains.
+The publications [2, 3] aim to stimulate discussions around human-AI collaboration, intellectual property, and the ethical implications of AI in creative domains.
 
 # SGS.ai project
 

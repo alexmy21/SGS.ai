@@ -252,7 +252,7 @@ cosine_similarity = cosine(h1, h2)  # Float between 0 and 1
 
 HLLSets provide the perfect balance of accuracy and efficiency for SGS.ai's large-scale data processing needs:
 
-- Memory-efficient: Count millions of unique elements in KBs of memory
+- Memory-efficient: Approximating millions of unique elements in KBs of memory
 
 - Real-time analytics: Process streaming data with constant-time operations
 

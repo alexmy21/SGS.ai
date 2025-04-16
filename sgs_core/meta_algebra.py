@@ -1,9 +1,16 @@
 # meta_algebra.py
 
 from julia import Main
+import os
 
-# Load the sets32.jl file
-Main.include("HllSets/src/HllSets.jl")
+# Get the path from the environment variable
+hllsets_path = os.getenv("HLLSETS_PATH")
+
+if not hllsets_path:
+    raise EnvironmentError("HLLSETS_PATH environment variable is not set")
+
+# Load the HllSets.jl file
+Main.include(hllsets_path)
 
 Main.using(".HllSets")
 

@@ -19,6 +19,9 @@ RUN wget https://julialang-s3.julialang.org/bin/linux/x64/1.9/julia-${JULIA_VERS
 # Add Julia to PATH
 ENV PATH="/usr/local/bin:$PATH"
 
+# Set the HLLSETS_PATH environment variable
+ENV HLLSETS_PATH=/app/HllSets/src/HllSets.jl
+
 # Install uv
 RUN python -m pip install uv
 

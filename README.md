@@ -447,3 +447,4 @@ AISNS '24: Proceedings of the 2024 2nd International Conference on Artificial In
 17. https://pub.towardsai.net/adaptive-multi-teacher-distillation-for-enhanced-supervised-learning-e70062acce7e
 18. https://medium.com/data-science-collective/building-smarter-portfolios-with-dynamic-programming-and-reinforcement-learning-and-dynamic-0de5e7d7fd11
 19. https://medium.com/@shawn.stanford/the-bath-fitters-of-cobol-9932453bf185
+20. https://billatnapier.medium.com/recall-is-back-the-dumbest-ai-that-will-track-everything-you-do-90e2de1ec579

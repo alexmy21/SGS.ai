@@ -4,8 +4,6 @@ from starlette.routing import Route
 import uvicorn
 from u_controller import Controller
 
-
-
 # Define the request handler
 async def handle_request(request):
     # Initialize the Universal Controller

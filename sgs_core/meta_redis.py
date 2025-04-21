@@ -1,4 +1,6 @@
 import redis
+from redis.commands.search.field import TextField, NumericField, TagField
+from redis.commands.search.indexDefinition import IndexDefinition, IndexType
 import numpy as np
 from meta_algebra import HllSet
 
@@ -19,6 +21,60 @@ class RedisStore:
             socket_connect_timeout=5,  # 5 second timeout
             decode_responses=False  # Keep binary data intact
         )
+
+        try:
+            self._create_indices()
+            print("Redisearch indices created successfully.")
+        except redis.exceptions.ResponseError as e:
+            if "Index already exists" in str(e):
+                print("Indices already exist.")
+            else:
+                print(f"Error creating indices: {e}")
+        except redis.exceptions.ConnectionError:
+            print("Could not connect to Redis")
+        except redis.exceptions.TimeoutError:
+            print("Redis connection timed out")        
+        except redis.exceptions.RedisError as e:
+            print(f"Redis error: {e}")
+
+    def _create_indices(self):
+        """Initialize Redisearch indices."""
+        # Edges Index (left_hll → right_hll)
+        self.redis.ft("edges").create_index([
+            TextField("e_sha1"),
+            TextField("label"),
+            TextField("left"),
+            TextField("right"),
+            TextField("attr")
+        ], definition=IndexDefinition(prefix=["meta:edges:"]))
+
+        # Tokens Index (token → data_ids)
+        self.redis.ft("tokens").create_index([
+            TextField("hash"),
+            NumericField("bin"),
+            NumericField("zeros"),
+            NumericField("TF"),
+            TagField("refs")
+        ], definition=IndexDefinition(prefix=["meta:tokens:"]))
+
+        # Commits Index (commit → timestamp)
+        self.redis.ft("commits").create_index([
+            TextField("c_sha1"),
+            NumericField("timestamp")
+        ], definition=IndexDefinition(prefix=["meta:commits:"]))    
+
+    
+    def execute_graph_query(self, query):
+        """Execute a Redis Graph query."""
+        return self.redis.execute_command("GRAPH.QUERY", "graph", query)
+
+    def roaring_bitmap_command(self, command, *args):
+        """Execute a Redis Roaring Bitmap command."""
+        return self.redis.execute_command(command, *args)
+
+    def search(self, index_name, query):
+        """Search a Redisearch index."""
+        return self.redisearch_client.search(query)
 
     def ping(self, **kwargs):
         """

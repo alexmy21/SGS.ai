@@ -448,3 +448,7 @@ AISNS '24: Proceedings of the 2024 2nd International Conference on Artificial In
 18. https://medium.com/data-science-collective/building-smarter-portfolios-with-dynamic-programming-and-reinforcement-learning-and-dynamic-0de5e7d7fd11
 19. https://medium.com/@shawn.stanford/the-bath-fitters-of-cobol-9932453bf185
 20. https://billatnapier.medium.com/recall-is-back-the-dumbest-ai-that-will-track-everything-you-do-90e2de1ec579
+21. https://medium.com/data-science-collective/enhancing-time-series-forecasting-with-dynamic-weighted-trees-8dad9aeae112
+22. https://medium.com/data-science-collective/how-to-run-large-language-models-llms-locally-a-beginners-guide-to-offline-ai-50e89dadcafd
+23. https://medium.com/data-science-collective/teaching-models-to-choose-features-wisely-a-distill-to-select-approach-a9359e2ba5d1
+24. https://medium.com/@devlink/top-20-european-alternatives-to-major-us-technology-services-you-could-change-right-now-1a727cc233f5

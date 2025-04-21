@@ -1,71 +1,54 @@
-# 
-# This module is greatly inspired by the implementation of the HLL algorithm in the Julia library:
-# 
-# Below is the header from this file
-# From Flajolet, Philippe; Fusy, Éric; Gandouet, Olivier; Meunier, Frédéric (2007)
-# DOI: 10.1.1.76.4286
-# With algorithm improvements by Google (https://ai.google/research/pubs/pub40671)
+"""
+MIT License
 
-# Principle:
-# When observing N distinct uniformly distributed integers, the expected maximal
-# number of leading zeros in the integers is log(2, N), with large variation.
-# To cut variation, we keep 2^P counters, each keeping track of N/2^P
-# observations. The estimated N for each counter is averaged using harmonic mean.
-# Last, corrections for systematic bias are added, one multiplicative and one
-# additive factor.
-# To make the observations uniformly distributed integers, we hash them.
-# =====================================================================================
-# """
-# MIT License
+Copyright (c) 2023: Jakob Nybo Nissen.
 
-# Copyright (c) 2023: Jakob Nybo Nissen.
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
 
-# Permission is hereby granted, free of charge, to any person obtaining
-# a copy of this software and associated documentation files (the
-# "Software"), to deal in the Software without restriction, including
-# without limitation the rights to use, copy, modify, merge, publish,
-# distribute, sublicense, and/or sell copies of the Software, and to
-# permit persons to whom the Software is furnished to do so, subject to
-# the following conditions:
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
 
-# The above copyright notice and this permission notice shall be
-# included in all copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-# CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+https://github.com/jakobnissen/Probably.jl/blob/master/src/hyperloglog/hyperloglog.jl
 
-# https://github.com/jakobnissen/Probably.jl/blob/master/src/hyperloglog/hyperloglog.jl
+"""
 
-# """
-# =======================================================================================
+"""
+HyperLogLog Set Implementation with Extended Set Operations
 
+This module provides a HyperLogLog (HLL) implementation with additional set operations
+including union, intersection, difference, and complement operations.
 
-# We made sugnificant changes to the original implementation:
-# - We use a BitVector instead of a UInt8 for the counters
-# - We implemented additional operators to support set operations, like union (union), intersection(intersect), difference(diff), 
-#   and equality (isequal). Now they work the same way as they work for sets
-# - we added a function to convert the BitVector to a UInt64 (dump) and vice versa (restore)
-# - We added a function to calculate the delta between two HLL sets (delta)
-# - We added a function to calculate SHA1 of the counts as a string
-# - We also renamed some of the original operators to be more consistent with HyperLogLog terminology
-
-# We borrowed a lot from this project, but also made a lot of changes, 
-# so, for all errors do not blame the original author but me.
+Key Features:
+- Efficient cardinality estimation using HLL algorithm
+- Set operations between HLL sets
+- Serialization/deserialization support
+- Similarity measures (Jaccard, Cosine)
+"""
 
 module HllSets
 
     include("constants.jl")
-    using SHA # DataFrames, CSV, Arrow, Tables, LinearAlgebra, JSON3, SparseArrays
+    using SHA 
 
     export HllSet, add!, count, union, intersect, diff, isequal, isempty, id, delta, getbin, getzeros, maxidx, match, cosine, dump, restore, to_binary_tensor, flatten_tensor, tensor_to_string, string_to_tensor, binary_tensor_to_hllset, set_xor, set_comp, set_added, set_deleted
 
     struct HllSet{P}
         counts::Vector{UInt32}
+
         function HllSet{P}() where {P}
             isa(P, Integer) || throw(ArgumentError("P must be integer"))
             (P < 4 || P > 18) && throw(ArgumentError("P must be between 4 and 18"))
@@ -77,81 +60,178 @@ module HllSets
         return HllSet{p}()
     end
 
-    #--------------------------------------------------
-    # Function to convert HllSet to a binary tensor
-    #--------------------------------------------------
-    function to_binary_tensor(hll::HllSet{P}) where {P}
-        tensor = zeros(Bool, 2^P, 32)
-        for i in 1:2^P
-            binary_str = bitstring(hll.counts[i])
-            for j in 1:32
-                tensor[i, j] = binary_str[j] == '1'
-            end
-        end
-        return tensor
-    end
+    # Core HLL Operations --------------------------------------------------------
 
-    # Function to flatten the binary tensor to a 1-dimensional tensor (bit vector)
-    #--------------------------------------------------
-    function flatten_tensor(tensor::Array{Bool, 2})
-        return vec(tensor)
-    end
-
-    # Function to convert the flattened tensor to a string representation
-    #--------------------------------------------------
-    function tensor_to_string(flattened_tensor::Vector{Bool})
-        # return join(flattened_tensor .== true ? "1" : "0", "")
-        return join([b ? "1" : "0" for b in flattened_tensor], "")
-    end
-
-    # Function to convert the string representation to a binary tensor
-    #--------------------------------------------------
-    function string_to_tensor(str::String, P::Int=10)
-        str = rpad(str, 2^P * 32, "0")
-        @assert length(str) == 2^P * 32 "String length must be 2^P * 32"
-        return reshape([parse(Bool, c) for c in str], (2^P, 32))
-    end
-
-    # Function to convert the binary tensor to a HllSet
-    #--------------------------------------------------
-    function binary_tensor_to_hllset(tensor::Array{Bool, 2}, P::Int=10)
-        hll = HllSet{P}()
-        for i in 1:2^P
-            hll.counts[i] = parse(UInt32, tensor_to_string(tensor[i, :]), base=2)
-        end
-        return hll
-    end
-
-    # Overload the show function to print the HllSet
-    #--------------------------------------------------
-    Base.show(io::IO, x::HllSet{P}) where {P} = println(io, "HllSet{$(P)}()")
-
-    Base.sizeof(::Type{HllSet{P}}) where {P} = 1 << P
-    Base.sizeof(x::HllSet{P}) where {P} = sizeof(typeof(x))
-
-    # ====================================================
-    # Functions to calculate bin number and number of trailing zeros
-    #--------------------------------------------------
     """
-        The `getbin` function is part of the `HllSet` struct and it's used to get the binary representation 
-        of an integer `x` based on the parameter `P` of the `HllSet`.
+        add!(hll::HllSet{P}, x::Any; seed::Int=0)
 
-        Here's a step-by-step explanation of how it works:
+    Add an element to the HLL set.
+    """
+    function add!(hll::HllSet{P}, x::Any; seed::Int = 0) where {P}
+        # println("seed = ", seed, "; P = ", P, "; x = ", x)
+        h = u_hash(x; seed=seed)
+        # println("hash = ", h)
+        bin = getbin(hll, h)
+        idx = getzeros(hll, h)
+        if idx <= 32
+            hll.counts[bin] |= (1 << (idx - 1))
+        end
+    end
 
-        1. The function takes two arguments: an instance of `HllSet` and an integer `x`.
+    function add!(hll::HllSet{P}, values::Union{Set, Vector}; seed::Int = 0) where {P}
+        for value in values
+            add!(hll, value, seed=seed)
+        end
+    end    
 
-        2. It calculates the number of bits to shift right (`>>>`) by subtracting `P + 1` 
-        from `8 * sizeof(UInt)`. This is done to get the `P + 1` most significant bits of `x`.
+    # Helper Functions ----------------------------------------------------------
 
-        3. The `x` is then shifted right by the calculated number of bits plus 1.
+    function _validate_compatible(x::HllSet{P}, y::HllSet{P}) where {P}
+        length(x.counts) == length(y.counts) || 
+            throw(ArgumentError("HLL sets must have same precision"))
+    end
 
-        4. The shifted `x` is converted to a hexadecimal string and the "0x" prefix 
-        (which indicates a hexadecimal number in Julia) is removed.
+    # Set Operations ------------------------------------------------------------
 
-        5. Finally, the hexadecimal string is parsed back into an integer and returned.
+    """
+        union(x::HllSet{P}, y::HllSet{P}) where {P}
 
-        This function essentially extracts the `P + 1` most significant bits from `x` and returns them as an integer. 
-        The `+ 1` is there to compensate for the fact that `BitVector` in Julia is of size 64.
+    Compute union of two HLL sets.
+    """
+    function Base.union!(dest::HllSet{P}, src::HllSet{P}) where {P}
+        _validate_compatible(dest, src)
+
+        @inbounds for i in 1:length(dest.counts)
+            dest.counts[i] = dest.counts[i] .| src.counts[i]
+        end
+        return dest
+    end
+
+    function Base.union(x::HllSet{P}, y::HllSet{P}) where {P} 
+        _validate_compatible(x, y)
+
+        z = HllSet{P}()
+        @inbounds for i in 1:length(x.counts)
+            z.counts[i] = x.counts[i] .| y.counts[i]
+        end
+        return z
+    end
+
+    """
+        intersect(x::HllSet{P}, y::HllSet{P}) where {P}
+
+    Compute intersection of two HLL sets.
+    """
+    function Base.intersect(x::HllSet{P}, y::HllSet{P}) where {P} 
+        _validate_compatible(x, y)
+
+        z = HllSet{P}()
+        @inbounds for i in 1:length(x.counts)
+            z.counts[i] = x.counts[i] .& y.counts[i]
+        end
+        return z
+    end
+
+    """
+        diff(hll_1::HllSet{P}, hll_2::HllSet{P}) where {P}
+
+    Compute difference between two HLL sets.
+    """
+    function Base.diff(hll_1::HllSet{P}, hll_2::HllSet{P}) where {P}
+        _validate_compatible(hll_1, hll_2)
+        
+        n = HllSet{P}()
+        d = HllSet{P}()
+        r = HllSet{P}()
+
+        d = set_comp(hll_1, hll_2)
+        n = set_comp(hll_2, hll_1)
+        r = intersect(hll_1, hll_2)
+
+        return (DEL = d, RET = r, NEW = n)
+    end
+
+    """
+        set_comp(x::HllSet{P}, y::HllSet{P}) where {P}
+
+    Compute difference between two HLL sets as a y compliment to x. Return y elements that are not in x.
+    """
+
+    function set_comp(x::HllSet{P}, y::HllSet{P}) where {P} 
+        _validate_compatible(x, y)
+
+        z = HllSet{P}()
+        @inbounds for i in 1:length(x.counts)
+            z.counts[i] = .~y.counts[i] .& x.counts[i]
+        end
+        return z
+    end
+
+    """
+        set_added(x::HllSet{P}, y::HllSet{P}) where {P}
+
+    Compute difference between two HLL sets as a x compliment to y. Return x elements that are not in y.
+    """
+    function set_xor(x::HllSet{P}, y::HllSet{P}) where {P} 
+        length(x.counts) == length(y.counts) || throw(ArgumentError("HllSet{P} must have same size"))
+        z = HllSet{P}()
+        @inbounds for i in 1:length(x.counts)
+            z.counts[i] = xor.(x.counts[i], (y.counts[i]))
+        end
+        return z
+    end
+
+    """
+        copy(dest::HllSet{P}, src::HllSet{P}) where {P}
+
+    creates copy of HllSet{P} object from src to dest
+    """
+    function Base.copy!(dest::HllSet{P}, src::HllSet{P}) where {P}
+        length(dest.counts) == length(src.counts) || throw(ArgumentError("HllSet{P} must have same size"))
+        @inbounds for i in 1:length(dest.counts)
+            dest.counts[i] = src.counts[i]
+        end
+        return dest
+    end
+
+    function Base.copy!(src::HllSet{P}) where {P}
+        # length(dest.counts) == length(src.counts) || throw(ArgumentError("HllSet{P} must have same size"))
+        dest = HllSet{P}()
+        @inbounds for i in 1:length(src.counts)
+            dest.counts[i] = src.counts[i]
+        end
+        return dest
+    end  
+
+    """
+        isequal(x::HllSet{P}, y::HllSet{P}) where {P}
+
+    Check if two HLL sets are equal.
+    """    
+    function Base.isequal(x::HllSet{P}, y::HllSet{P}) where {P} 
+        length(x.counts) == length(y.counts) || throw(ArgumentError("HllSet{P} must have same size"))
+        @inbounds for i in 1:length(x.counts)
+            x.counts[i] == y.counts[i] || return false
+        end
+        return true
+    end    
+
+    Base.isempty(x::HllSet{P}) where {P} = all(all, x.counts)   
+
+    """
+        count(x::HllSet{P}) where {P}
+
+    Estimate the cardinality of the HLL set.
+    """
+    function Base.count(x::HllSet{P}) where {P}
+        # Harmonic mean estimates cardinality per bin. There are 2^P bins
+        harmonic_mean = sizeof(x) / sum(1 / 1 << maxidx(i) for i in x.counts)
+        biased_estimate = α(x) * sizeof(x) * harmonic_mean
+        return round(Int, biased_estimate - bias(x, biased_estimate))
+    end
+
+    """
+        Set of helper functions for cardinality estimation.
     """
     function getbin(hll::HllSet{P}, x::Int) where {P}
         return getbin(x, P=P)        
@@ -172,165 +252,6 @@ module HllSets
         or_mask = ((UInt(1) << P) - 1) << (8 * sizeof(UInt) - P)
         return trailing_zeros(x | or_mask) + 1
     end
-
-    # Function to add an element to the HllSet
-    #--------------------------------------------------
-    function add!(hll::HllSet{P}, x::Any; seed::Int = 0) where {P}
-        # println("seed = ", seed, "; P = ", P, "; x = ", x)
-        h = u_hash(x; seed=seed)
-        # println("hash = ", h)
-        bin = getbin(hll, h)
-        idx = getzeros(hll, h)
-        if idx <= 32
-            hll.counts[bin] |= (1 << (idx - 1))
-        end
-    end
-
-    function add!(hll::HllSet{P}, values::Union{Set, Vector}; seed::Int = 0) where {P}
-        for value in values
-            add!(hll, value, seed=seed)
-        end
-    end
-
-    # Overload the Set operations for the HllSet
-    #--------------------------------------------------
-    function Base.union!(dest::HllSet{P}, src::HllSet{P}) where {P}
-        length(dest.counts) == length(src.counts) || throw(ArgumentError("HllSet{P} must have same size"))
-        @inbounds for i in 1:length(dest.counts)
-            dest.counts[i] = dest.counts[i] .| src.counts[i]
-        end
-        return dest
-    end
-
-    function Base.copy!(dest::HllSet{P}, src::HllSet{P}) where {P}
-        length(dest.counts) == length(src.counts) || throw(ArgumentError("HllSet{P} must have same size"))
-        @inbounds for i in 1:length(dest.counts)
-            dest.counts[i] = src.counts[i]
-        end
-        return dest
-    end
-
-    function Base.copy!(src::HllSet{P}) where {P}
-        # length(dest.counts) == length(src.counts) || throw(ArgumentError("HllSet{P} must have same size"))
-        dest = HllSet{P}()
-        @inbounds for i in 1:length(src.counts)
-            dest.counts[i] = src.counts[i]
-        end
-        return dest
-    end
-
-    function Base.union(x::HllSet{P}, y::HllSet{P}) where {P} 
-        length(x.counts) == length(y.counts) || throw(ArgumentError("HllSet{P} must have same size"))
-        z = HllSet{P}()
-        @inbounds for i in 1:length(x.counts)
-            z.counts[i] = x.counts[i] .| y.counts[i]
-        end
-        return z
-    end
-
-    function Base.intersect(x::HllSet{P}, y::HllSet{P}) where {P} 
-        length(x.counts) == length(y.counts) || throw(ArgumentError("HllSet{P} must have same size"))
-        z = HllSet{P}()
-        @inbounds for i in 1:length(x.counts)
-            z.counts[i] = x.counts[i] .& y.counts[i]
-        end
-        return z
-    end
-
-    function set_xor(x::HllSet{P}, y::HllSet{P}) where {P} 
-        length(x.counts) == length(y.counts) || throw(ArgumentError("HllSet{P} must have same size"))
-        z = HllSet{P}()
-        @inbounds for i in 1:length(x.counts)
-            z.counts[i] = xor.(x.counts[i], (y.counts[i]))
-        end
-        return z
-    end
-
-    function set_comp(x::HllSet{P}, y::HllSet{P}) where {P} 
-        length(x.counts) == length(y.counts) || throw(ArgumentError("HllSet{P} must have same size"))
-        z = HllSet{P}()
-        @inbounds for i in 1:length(x.counts)
-            z.counts[i] = .~y.counts[i] .& x.counts[i]
-        end
-        return z
-    end
-
-    """
-        This convenience methods that semantically reflect the purpose of using set_comp function
-        in case of comparing two states of the same set now (current) and as it was before (previous).
-        - set_added - returns the elements that are in the current set but not in the previous
-        - set_deleted - returns the elements that are in the previous set but not in the current
-    """
-    function set_added(current::HllSet{P}, previous::HllSet{P}) where {P} 
-        length(previous.counts) == length(current.counts) || throw(ArgumentError("HllSet{P} must have same size"))
-        added = HllSet{P}()
-        @inbounds for i in 1:length(previous.counts)
-            added.counts[i] = .~previous.counts[i] .& current.counts[i]
-        end
-        return added
-    end
-
-    function set_deleted(current::HllSet{P}, previous::HllSet{P}) where {P} 
-        length(previous.counts) == length(current.counts) || throw(ArgumentError("HllSet{P} must have same size"))
-        added = HllSet{P}()
-        @inbounds for i in 1:length(previous.counts)
-            added.counts[i] = .~current.counts[i] .& previous.counts[i]
-        end
-        return added
-    end
-
-    """
-        The `Base.diff` function in Julia is part of the `HllSet` struct and it's used to calculate the difference between two `HllSet` instances.
-
-        Here's a step-by-step explanation of how it works:
-
-        1. The function takes two arguments: two instances of `HllSet`.
-
-        2. It checks if the lengths of `x.counts` and `y.counts` are equal. If they are not, it throws an `ArgumentError`.
-
-        3. It initializes three new `HllSet` instances: `n`, `d`, and `r`.
-
-        4. It calculates the set complement of `hll_1` and `hll_2` (i.e., elements that are in `hll_1` but not in `hll_2`) 
-        and assigns it to `n`.
-
-        5. It calculates the set complement of `hll_2` and `hll_1` (i.e., elements that are in `hll_2` but not in `hll_1`) 
-        and assigns it to `d`.
-
-        6. It calculates the intersection of `hll_1` and `hll_2` (i.e., elements that are in both `hll_1` and `hll_2`) 
-        and assigns it to `r`.
-
-        7. It returns a tuple with three fields: `DEL` (for deleted elements), `RET` (for retained elements), 
-        and `NEW` (for new elements). Each field is an `HllSet` representing the corresponding set of elements.
-
-        This function essentially calculates the difference between two `HllSet`s in terms of deleted, retained, and new elements.
-
-    """
-    function Base.diff(hll_1::HllSet{P}, hll_2::HllSet{P}) where {P}
-        length(hll_1.counts) == length(hll_2.counts) || throw(ArgumentError("HllSet{P} must have same size"))
-
-        n = HllSet{P}()
-        d = HllSet{P}()
-        r = HllSet{P}()
-
-        d = set_comp(hll_1, hll_2)
-        n = set_comp(hll_2, hll_1)
-        r = intersect(hll_1, hll_2)
-
-        return (DEL = d, RET = r, NEW = n)
-    end
-
-    function Base.isequal(x::HllSet{P}, y::HllSet{P}) where {P} 
-        length(x.counts) == length(y.counts) || throw(ArgumentError("HllSet{P} must have same size"))
-        @inbounds for i in 1:length(x.counts)
-            x.counts[i] == y.counts[i] || return false
-        end
-        return true
-    end
-
-    Base.isempty(x::HllSet{P}) where {P} = all(all, x.counts)   
-
-    # Functions that support calculations of HllSets cardinality
-    #--------------------------------------------------
     α(x::HllSet{P}) where {P} =
         if P == 4
             return 0.673
@@ -371,37 +292,96 @@ module HllSets
         return total_bits - leading_zeros_count
     end
 
-    # Function to calculate the cardinality of the HllSet
-    #--------------------------------------------------
-    function Base.count(x::HllSet{P}) where {P}
-        # Harmonic mean estimates cardinality per bin. There are 2^P bins
-        harmonic_mean = sizeof(x) / sum(1 / 1 << maxidx(i) for i in x.counts)
-        biased_estimate = α(x) * sizeof(x) * harmonic_mean
-        return round(Int, biased_estimate - bias(x, biased_estimate))
+    # Match Operations ------------------------------------------------------------
+
+    """
+        match(x::HllSet{P}, y::HllSet{P}) where {P}
+    Compute the Jaccard similarity between two HLL sets.
+    """
+    function Base.match(x::HllSet{P}, y::HllSet{P}) where {P}
+        length(x.counts) == length(y.counts) || throw(ArgumentError("HllSet{P} must have same size"))
+        
+        count_u = count(union(x, y))
+        count_i = count(intersect(x, y))
+        return round(Int64, ((count_i / count_u) * 100))
     end
 
     """
-        The `id` function in Julia is part of the `HllSet` struct and it's used to generate 
-            a unique identifier for an instance of `HllSet`.
+        cosine(hll_1::HllSet{P}, hll_2::HllSet{P}) where {P}
+    Compute the cosine similarity between two HLL sets.
+    """
+    function cosine(hll_1::HllSet{P}, hll_2::HllSet{P}) where {P}
+        length(hll_1.counts) == length(hll_2.counts) || throw(ArgumentError("HllSet{P} must have same size"))
 
-        Here's a step-by-step explanation of how it works:
+        v1 = hll_1.counts
+        v2 = hll_2.counts
+        if norm(v1) == 0 || norm(v2) == 0
+            return 0.0
+        end
+        return dot(v1, v2) / (norm(v1) * norm(v2))
+    end
 
-        1. The function takes one argument: an instance of `HllSet`.
+    # Serialization and Deserialization ----------------------------------------
 
-        2. It initializes an empty byte array `bytearray`.
+    """
+        to_binary_tensor(x::HllSet{P}) where {P}
+    Convert the HLL set to a binary tensor.
+    """
+    function to_binary_tensor(hll::HllSet{P}) where {P}
+        tensor = zeros(Bool, 2^P, 32)
+        for i in 1:2^P
+            binary_str = bitstring(hll.counts[i])
+            for j in 1:32
+                tensor[i, j] = binary_str[j] == '1'
+            end
+        end
+        return tensor
+    end
 
-        3. It then iterates over each bit vector in `x.counts`. For each bit vector, it reinterprets 
-            the bit vector as an array of `UInt8` (unsigned 8-bit integers) and appends it to `bytearray`. 
-            This effectively converts the vector of bit vectors into a byte array.
+    """
+        flatten_tensor(tensor::Array{Bool, 2})
+    Flatten the binary tensor to a 1D array.
+    """
+    function flatten_tensor(tensor::Array{Bool, 2})
+        return vec(tensor)
+    end
 
-        4. It calculates the SHA1 hash of the byte array. SHA1 is a cryptographic hash function that 
-            produces a 160-bit (20-byte) hash value. It's commonly used to check the integrity of data.
+    """
+        tensor_to_string(x::HllSet{P}) where {P}
+    Convert the binary tensor to a string representation.
+    """
+    function tensor_to_string(flattened_tensor::Vector{Bool})
+        # return join(flattened_tensor .== true ? "1" : "0", "")
+        return join([b ? "1" : "0" for b in flattened_tensor], "")
+    end
 
-        5. It converts the hash value into a hexadecimal string using the `SHA.bytes2hex` function and returns it.
+    """
+        string_to_tensor(str::String, P::Int=10)
+    Convert a string representation of a binary tensor to a 2D array.
+    """
+    function string_to_tensor(str::String, P::Int=10)
+        str = rpad(str, 2^P * 32, "0")
+        @assert length(str) == 2^P * 32 "String length must be 2^P * 32"
+        return reshape([parse(Bool, c) for c in str], (2^P, 32))
+    end
 
-        This function essentially generates a unique identifier for an `HllSet` based on the contents 
-            of its `counts` field. The identifier is a SHA1 hash, so 
-            it's highly unlikely that two different `HllSet`s will have the same identifier.
+    """
+        binary_tensor_to_hllset(tensor::Array{Bool, 2}, P::Int=10)
+    Convert a binary tensor to an HLL set.
+    """
+    function binary_tensor_to_hllset(tensor::Array{Bool, 2}, P::Int=10)
+        hll = HllSet{P}()
+        for i in 1:2^P
+            hll.counts[i] = parse(UInt32, tensor_to_string(tensor[i, :]), base=2)
+        end
+        return hll
+    end   
+   
+    # HllSet ID ---------------------------------------------------
+    
+    """
+        id(x::HllSet{P}) where {P}
+    Compute the ID of the HLL set.
     """
     function id(x::HllSet{P}) where {P}
         if x == nothing
@@ -426,75 +406,23 @@ module HllSets
         return SHA.bytes2hex(hash_value)
     end
 
-    # Function to calculate the Jaccard similarity between two HllSets
-    #--------------------------------------------------
-    """
-        The `Base.match` function in Julia is part of the `HllSet` struct and it's used to calculate 
-            the percentage of matching elements between two `HllSet` instances.
-
-        Here's a step-by-step explanation of how it works:
-
-        1. The function takes two arguments: two instances of `HllSet`.
-
-        2. It checks if the lengths of `x.counts` and `y.counts` are equal. If they are not, it throws an `ArgumentError`.
-
-        3. It calculates the union of `x` and `y` and counts the number of elements in the result. This is stored in `count_u`.
-
-        4. It calculates the intersection of `x` and `y` and counts the number of elements in the result. This is stored in `count_i`.
-
-        5. It calculates the ratio of `count_i` to `count_u`, multiplies it by 100 to get a percentage, 
-        rounds it to the nearest integer, and returns it.
-
-        This function essentially calculates the Jaccard index (the size of the intersection 
-            divided by the size of the union) of the two `HllSet`s and returns it as a percentage. 
-            The Jaccard index is a measure of the similarity between two sets. It's 100% if the sets 
-            are identical and 0% if they have no elements in common.
-    """
-    function Base.match(x::HllSet{P}, y::HllSet{P}) where {P}
-        length(x.counts) == length(y.counts) || throw(ArgumentError("HllSet{P} must have same size"))
-        
-        count_u = count(union(x, y))
-        count_i = count(intersect(x, y))
-        return round(Int64, ((count_i / count_u) * 100))
+    function u_hash(x; seed::Int=0) 
+        if seed == 0
+            abs_hash = abs(hash(x))
+        else
+            abs_hash = abs(hash(hash(x) + seed))
+        end         
+        return Int(abs_hash % typemax(Int64))
     end
 
-    """
-        The `cosine` function in Julia is part of the `HllSet` struct and it's used to calculate 
-            the cosine similarity between two `HllSet` instances.
+    # Overload the show function to print the HllSet --------------------------------------------------
+    Base.show(io::IO, x::HllSet{P}) where {P} = println(io, "HllSet{$(P)}()")
 
-        Here's a step-by-step explanation of how it works:
+    Base.sizeof(::Type{HllSet{P}}) where {P} = 1 << P
+    Base.sizeof(x::HllSet{P}) where {P} = sizeof(typeof(x))
 
-        1. The function takes two arguments: two instances of `HllSet`.
-
-        2. It checks if the lengths of `x.counts` and `y.counts` are equal. If they are not, it throws an `ArgumentError`.
-
-        3. It assigns the `counts` field of `hll_1` and `hll_2` to `v1` and `v2` respectively.
-
-        4. It calculates the dot product of `v1` and `v2` and divides it by the product of the norms of `v1` and `v2`.
-
-        5. It returns the result of the division.
-
-        This function essentially calculates the cosine similarity between the `counts` fields of two `HllSet`s. 
-            The cosine similarity is a measure of the cosine of the angle between two vectors. 
-            It's a measure of how similar the vectors are. If the vectors are identical, the cosine similarity is 1. 
-            If the vectors are orthogonal (i.e., they have an angle of 90 degrees between them), the cosine similarity is 0.
-    """
-
-    function cosine(hll_1::HllSet{P}, hll_2::HllSet{P}) where {P}
-        length(hll_1.counts) == length(hll_2.counts) || throw(ArgumentError("HllSet{P} must have same size"))
-
-        v1 = hll_1.counts
-        v2 = hll_2.counts
-        if norm(v1) == 0 || norm(v2) == 0
-            return 0.0
-        end
-        return dot(v1, v2) / (norm(v1) * norm(v2))
-    end
-
-    # dump  function: 
-    #   Convert the reversed BitVector to a UInt64
-    #   we reversed the BitVector to make integer smaller
-    #--------------------------------------------------
+    # Depricated Functions --------------------------------------------------
+    
     function Base.dump(x::HllSet{P}) where {P}
         # Base.depwarn("dump(hll::HllSet{P}) is deprecated, use getcounts(x::Int; P::Int=10) instead.", :getbin)
         # For safety - this is also enforced in the HLL constructor
@@ -505,9 +433,6 @@ module HllSets
         return x.counts
     end
 
-    # restore function
-    #   Assumes that integers in vector are generated from reversed bit-vectors 
-    #--------------------------------------------------
     function restore!(z::HllSet{P}, x::Vector{UInt32}) where {P} 
         # For safety - this is also enforced in the HLL constructor
         if P < 4 || P > 18
@@ -534,14 +459,6 @@ module HllSets
             z.counts[i] = x[i]
         end
         return z
-    end     
+    end 
 
-    function u_hash(x; seed::Int=0) 
-        if seed == 0
-            abs_hash = abs(hash(x))
-        else
-            abs_hash = abs(hash(hash(x) + seed))
-        end         
-        return Int(abs_hash % typemax(Int64))
-    end
 end

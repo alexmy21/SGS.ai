@@ -53,16 +53,28 @@ class HllSet:
     def difference(self, other):
         """
         Perform a difference with another HllSet.
+        Returns three HllSets: deleted, retained, and new.
         """
-        result = Main.diff(self.hll, other.hll)
-        return HllSet.from_julia(result)
-
+        deleted, retained, new = Main.diff(self.hll, other.hll)
+        return (
+            HllSet.from_julia(deleted),
+            HllSet.from_julia(retained),
+            HllSet.from_julia(new)
+        )
+    
     def complement(self, other):
         """
         Perform a complement operation with another HllSet.
         """
         result = Main.set_comp(self.hll, other.hll)
         return HllSet.from_julia(result)
+    
+    def to_binary_tensor(self):
+        """
+        Convert the HllSet to a binary tensor.
+        """
+        return Main.to_binary_tensor(self.hll)
+       
 
     @classmethod
     def from_julia(cls, julia_hll):

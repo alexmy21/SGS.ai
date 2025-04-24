@@ -452,3 +452,7 @@ AISNS '24: Proceedings of the 2024 2nd International Conference on Artificial In
 22. https://medium.com/data-science-collective/how-to-run-large-language-models-llms-locally-a-beginners-guide-to-offline-ai-50e89dadcafd
 23. https://medium.com/data-science-collective/teaching-models-to-choose-features-wisely-a-distill-to-select-approach-a9359e2ba5d1
 24. https://medium.com/@devlink/top-20-european-alternatives-to-major-us-technology-services-you-could-change-right-now-1a727cc233f5
+25. https://medium.com/@bill.giannakopoulos/networks-that-heal-themselves-a-graph-theoretic-lens-on-the-persistence-equation-bc7c9744f12c
+26. https://medium.com/machina-speculatrix/avr-basics-transmitting-across-i2c-cc3ea803929a
+27. https://pub.towardsai.net/a-novel-and-practical-meta-booster-for-supervised-learning-eab9715a154a
+28. https://pub.towardsai.net/reinforcement-learning-enhanced-gradient-boosting-machines-77457e8cb4d9

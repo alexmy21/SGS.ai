@@ -10,6 +10,10 @@ from redis.commands.search.indexDefinition import IndexDefinition, IndexType
 from meta_algebra import HllSet
 
 class RedisStore:
+
+    # Redisearch client for advanced indexing and searching -------------------
+    # ==============================================================================
+
     def __init__(self, host='redis', port=6379, db=0):
         """
         Initialize a connection to Redis with enhanced error handling.
@@ -89,6 +93,9 @@ class RedisStore:
             TextField("edge_key")
         ], definition=IndexDefinition(prefix=["meta:commits:"]))
 
+    # Data ingestion and processing -------------------------------------------
+    # ==============================================================================
+
     def ingest(self, location_tokens: List[str], dataset_tokens: List[str]) -> Tuple[str, str]:
         """
         Improved ingestion with better token processing and error handling.
@@ -130,49 +137,6 @@ class RedisStore:
         
         return loc_key, dataset_key
     
-    def store_hllset(self, pipe, key: str, hll: HllSet):
-        """
-        Store HLL counts in a Redis Roaring Bitmap.
-
-        Args:
-            pipe: Redis pipeline object.
-            key: Redis key to store the bitmap under.
-            hll: HllSet object containing the counts.
-        """
-        # Flatten the HLL counts into a binary vector
-        counts = hll.counts.flatten()
-
-        # Set bits in the Roaring Bitmap
-        for index, value in enumerate(counts):
-            if value:  # Only set bits for non-zero values
-                pipe.execute_command("SETBIT", key, index, 1)
-
-    def retrieve_hllset(self, key: str, P: int = 10) -> HllSet:
-        """
-        Retrieve an HllSet from Redis.
-
-        Args:
-            key: Redis key to retrieve.
-            P: Precision for the new HllSet (default 10).
-
-        Returns:
-            HllSet: The reconstructed HllSet object, or None if the key doesn't exist.
-        """
-        try:
-            # Fetch the serialized HLL counts from Redis
-            byte_array = self.redis.get(key)
-            if byte_array is None:
-                return None  # Key does not exist in Redis
-
-            # Deserialize the byte array into a numpy array
-            counts = np.frombuffer(byte_array, dtype=np.uint32)
-
-            # Reconstruct the HllSet object
-            hllset = HllSet(P)
-            hllset.counts = counts
-            return hllset
-        except Exception as e:
-            raise ValueError(f"Failed to retrieve HllSet: {str(e)}")
 
     def _create_hll_with_index(self, tokens: List[str], ref_sha1: Optional[str] = None) -> Tuple[HllSet, str]:
         """
@@ -235,7 +199,54 @@ class RedisStore:
         
         pipe.execute()
 
-    
+    # Store and retrieve HLLs -------------------------------------------
+    # ==============================================================================
+    #   
+    def store_hllset(self, pipe, key: str, hll: HllSet):
+        """
+        Store HLL counts in a Redis Roaring Bitmap.
+
+        Args:
+            pipe: Redis pipeline object.
+            key: Redis key to store the bitmap under.
+            hll: HllSet object containing the counts.
+        """
+        # Flatten the HLL counts into a binary vector
+        counts = hll.counts.flatten()
+
+        # Set bits in the Roaring Bitmap
+        for index, value in enumerate(counts):
+            if value:  # Only set bits for non-zero values
+                pipe.execute_command("SETBIT", key, index, 1)
+
+    def retrieve_hllset(self, key: str, P: int = 10) -> HllSet:
+        """
+        Retrieve an HllSet from Redis.
+
+        Args:
+            key: Redis key to retrieve.
+            P: Precision for the new HllSet (default 10).
+
+        Returns:
+            HllSet: The reconstructed HllSet object, or None if the key doesn't exist.
+        """
+        try:
+            # Fetch the serialized HLL counts from Redis
+            byte_array = self.redis.get(key)
+            if byte_array is None:
+                return None  # Key does not exist in Redis
+
+            # Deserialize the byte array into a numpy array
+            counts = np.frombuffer(byte_array, dtype=np.uint32)
+
+            # Reconstruct the HllSet object
+            hllset = HllSet(P)
+            hllset.counts = counts
+            return hllset
+        except Exception as e:
+            raise ValueError(f"Failed to retrieve HllSet: {str(e)}")
+        
+
     def commit(self, location_key: str, dataset_key: str,
               label: str = "id", metadata: Optional[Dict] = None) -> Dict:
         """
@@ -386,6 +397,9 @@ class RedisStore:
                 "message": str(e),
                 "type": type(e).__name__
             }
+    
+    # Set operations ------------------------------------------------
+    # ==============================================================================
     
     def set_operation(self, operation: str, keys: list, result_key: str, **kwargs):
         """

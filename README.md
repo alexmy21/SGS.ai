@@ -456,3 +456,5 @@ AISNS '24: Proceedings of the 2024 2nd International Conference on Artificial In
 26. https://medium.com/machina-speculatrix/avr-basics-transmitting-across-i2c-cc3ea803929a
 27. https://pub.towardsai.net/a-novel-and-practical-meta-booster-for-supervised-learning-eab9715a154a
 28. https://pub.towardsai.net/reinforcement-learning-enhanced-gradient-boosting-machines-77457e8cb4d9
+29. https://arxiv.org/pdf/2504.08842 (Towards Combinatorial Interpretability of Neural Computation)
+30. https://shairozsohail.medium.com/i-cant-get-no-boolean-satisfaction-0765a068b3b2

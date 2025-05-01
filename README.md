@@ -458,3 +458,8 @@ AISNS '24: Proceedings of the 2024 2nd International Conference on Artificial In
 28. https://pub.towardsai.net/reinforcement-learning-enhanced-gradient-boosting-machines-77457e8cb4d9
 29. https://arxiv.org/pdf/2504.08842 (Towards Combinatorial Interpretability of Neural Computation)
 30. https://shairozsohail.medium.com/i-cant-get-no-boolean-satisfaction-0765a068b3b2
+31. https://arxiv.org/pdf/2006.11239 (Denoising Diffusion Probabilistic Models)
+32. https://ai.gopubby.com/you-dont-need-backpropagation-to-train-neural-networks-anymore-e989d75564cb
+33. https://github.com/hojonathanho/diffusion/tree/master
+34. https://github.com/ashishbamania/Tutorials-On-Artificial-Intelligence/blob/main/Training%20Without%20Backpropagation/NoPropDT_on_MNIST.ipynb
+35. https://pub.towardsai.net/designing-customized-and-dynamic-prompts-for-large-language-models-1fa0cdb0c391

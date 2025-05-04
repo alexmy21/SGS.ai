@@ -463,3 +463,4 @@ AISNS '24: Proceedings of the 2024 2nd International Conference on Artificial In
 33. https://github.com/hojonathanho/diffusion/tree/master
 34. https://github.com/ashishbamania/Tutorials-On-Artificial-Intelligence/blob/main/Training%20Without%20Backpropagation/NoPropDT_on_MNIST.ipynb
 35. https://pub.towardsai.net/designing-customized-and-dynamic-prompts-for-large-language-models-1fa0cdb0c391
+36. https://pub.towardsai.net/from-static-to-dynamic-evolving-bayesian-network-thinking-for-real-world-applications-9917a3a92038

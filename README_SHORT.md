@@ -1,4 +1,5 @@
-# 🚀 SGS.ai README – Refactored & Reader-Friendly  
+# 🚀 SGS.ai README
+
 *“Self-Generative Systems, re-imagined for humans and AIs alike.”*
 
 ---
@@ -11,6 +12,7 @@ No manual merges, no broken upgrades, no vendor lock-in.
 ---
 
 ## 2. Vision in One Sentence
+
 > *“Give the system ideas; it gives you working software back.”*
 
 ---
@@ -29,6 +31,7 @@ bash <(curl -s https://raw.githubusercontent.com/alexmy21/SGS.ai/main/bootstrap.
 ---
 
 ## 4. Table of Contents
+
 1. [Core Ideas](#core-ideas)  
 2. [Architecture at a Glance](#architecture-at-a-glance)  
 3. [Von Neumann Reproduction Loop](#von-neumann-reproduction-loop)  

@@ -6,12 +6,16 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "flask>=3.1.0",
+    "graphviz>=0.20.3",
     "h5py>=3.13.0",
     "julia>=0.6.2",
+    "matplotlib>=3.10.3",
     "mmh3>=5.1.0",
+    "networkx>=3.5",
     "notebook>=7.4.0",
     "numpy>=2.2.3",
     "openai>=1.69.0",
+    "pandas>=2.2.3",
     "python-dotenv>=1.1.0",
     "pyyaml>=6.0.2",
     "redis>=5.2.1",

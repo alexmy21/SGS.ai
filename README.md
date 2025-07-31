@@ -465,3 +465,6 @@ AISNS '24: Proceedings of the 2024 2nd International Conference on Artificial In
 35. https://pub.towardsai.net/designing-customized-and-dynamic-prompts-for-large-language-models-1fa0cdb0c391
 36. https://pub.towardsai.net/from-static-to-dynamic-evolving-bayesian-network-thinking-for-real-world-applications-9917a3a92038
 37. https://medium.com/machina-speculatrix/a-beginners-experience-of-cupl-and-cplds-3f8540910c5a
+38. https://medium.com/@cristianleo120/googles-titans-the-math-behind-ai-memory-that-extends-beyond-the-context-window-a59e6d54cdec
+39. https://www.researchgate.net/publication/391570317_SGSai_SGSai_Self-Generative_Systems_via_Quantum-Inspired_HLLSet_Architectures?channel=doi&linkId=681cf288ded433155743f6d6&showFulltext=true
+40. https://arxiv.org/pdf/1910.03225 (Natural Gradient Boosting - NGBoost)

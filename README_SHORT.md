@@ -1,12 +1,17 @@
 # 🚀 SGS.ai README
 
-*“Self-Generative Systems, re-imagined for humans and AIs alike.”*
+>*“Self-Generative Systems, re-imagined for humans and AIs alike.”*
 
 ---
 
 ## 1. TL;DR
-SGS.ai is **open-source, self-updating, self-healing infrastructure** that lets you  
-`think` → `describe in metadata` → `watch AI build, test, and ship`.  
+
+SGS.ai is **open-source, self-updating, self-healing infrastructure** that lets you
+
+```math
+\text{think} → \text{describe in metadata} → \text{watch AI build, test, and ship.} 
+```
+
 No manual merges, no broken upgrades, no vendor lock-in.
 
 ---
@@ -72,6 +77,7 @@ graph TD
 ---
 
 ## 7. Von Neumann Reproduction Loop
+
 Borrowing from von Neumann’s automata, the system continuously **copies, mutates, commits**:
 
 | Transformer | Role | Formal Step |
@@ -81,17 +87,21 @@ Borrowing from von Neumann’s automata, the system continuously **copies, mutat
 | **C** – Universal Controller | Orchestrate A, B, D | `C(X,Y) → X(Y)` |
 | **D** – Environment Interface | Mutate for evolution | `D(Y′) → Y″` |
 
-> Loop in 3 lines of pseudo-code  
-> `foreach T in {A,B,C,D}:`  
-> `    T′  = B(T)`  
-> `    T″  = D(T′)`  
-> `    T   = A(T″)`  
+> Loop in 3 lines of pseudo-code
+
+```python
+foreach T in {A,B,C,D}:`  
+    T′  = B(T)`  
+    T″  = D(T′)`  
+    T   = A(T″)` 
+``` 
 
 Garbage-collect unreachable entities **outside** the loop to keep RAM lean.
 
 ---
 
 ## 8. HLLSet Algebra
+
 SGS.ai ships with `HllSets.jl`, a **memory-sipping set engine** (~1.5 kB for millions of keys).
 
 ```julia
@@ -117,6 +127,7 @@ count(a)  # => ≈ 3 (± 1 %)
 | **Windows (WSL2)** | `wsl --install` → then follow Ubuntu steps |
 
 Verify:
+
 ```bash
 podman --version && julia -e 'println("✅ Julia $VERSION")'
 ```
@@ -133,6 +144,7 @@ podman --version && julia -e 'println("✅ Julia $VERSION")'
 ---
 
 ## 11. References
+
 1. A. Mylnikov, *Self-Generative Systems*, AISNS ’24. ([doi](https://doi.org/10.1145/3714334.3714392))  
 2. [Thoughts on Collaborative Development #1 (PDF)](https://github.com/alexmy21/SGS.ai/blob/main/.PDF/Thoughts%20on%20Collaborative%20Development_1.pdf)  
 3. [Thoughts on Collaborative Development #2 (PDF)](https://github.com/alexmy21/SGS.ai/blob/main/.PDF/Thoughts%20on%20Collaborative%20Development_2.pdf)  

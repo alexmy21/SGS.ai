@@ -89,7 +89,7 @@ curl http://localhost:8000
 ```  
 
 **Join the Revolution**:  
-[GitHub](https://github.com/alexmy21/SGS.ai) | [Whitepaper](https://doi.org/10.1145/3714334.3714392) | [Demo Video](link)  
+[GitHub](https://github.com/alexmy21/SGS.ai) | [Whitepaper](https://doi.org/10.1145/3714334.3714392)  
 
 ---  
 *"SGS.ai isn't just tools – it's organisms. They grow when you need, heal when broken, and evolve when challenged."*  

@@ -174,5 +174,4 @@ cython_debug/
 key_api.txt
 
 # Docs
-.PDF/
-DeepSeekDialogues/
+.PDF/*.pdf

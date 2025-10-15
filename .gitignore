@@ -174,4 +174,4 @@ cython_debug/
 key_api.txt
 
 # Docs
-.PDF/*.pdf
+PDF/*.pdf

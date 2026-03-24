@@ -17,7 +17,7 @@ Main.using(".HllSets")
 class HllSet:
     def __init__(self, P=10):
         """
-        Initialize an HllSet with a given precision P.
+        Initialize an HllSet with a given precisiona P.
         """
         self.P = P
         self.hll = Main.HllSet(P)  # Create a new HllSet in Julia

@@ -12,89 +12,107 @@ These publications are highlighting the importance of transparency in documentin
 
 The publications [2, 3] aim to stimulate discussions around human-AI collaboration, intellectual property, and the ethical implications of AI in creative domains.
 
-# SGS.ai project
+## SGS.ai project
 
 **SGS.ai is an open-source project, and like any open initiative, it thrives on collaboration. Currently, DeepSeek is the sole contributor to SGS.ai. I would be thrilled to see participation from other intellectuals. I am open to any form of collaboration, provided that SGS.ai remains an open-source project.**
 
-## Core principles
-### Foundational principles:
+### Core principles
+
+#### Foundational principles:
+
 - **Globally stateless, content-based identification** for all entities.
 - **Immutability** to ensure consistency.
 - **Idempotency** for reliable operations.
 - **Metadata-driven design** to isolate user customizations.
 
-### Self-Generative:
+#### Self-Generative
+
 - The system generates its own updates, optimizations, and extensions based on user needs and AI-driven insights.
 - It evolves over time without requiring manual intervention.
-### AI-Driven Development:
+
+#### AI-Driven Development
+
 - AI (e.g., DeepSeek) acts as the "development team," generating code, testing it, and committing it to GitHub.
 - Human developers provide high-level ideas, and AI handles the implementation.
-### User-Centric:
+
+#### User-Centric
+
 - Users define their custom resources and workflows through metadata.
 - The system respects user metadata and ensures it is never modified during updates.
-### Self-Healing:
+
+#### Self-Healing
+
 - The system performs self-diagnostic checks after updates and rolls back if something goes wrong.
 - It ensures high availability and reliability.
 
-## General Architecture
-### 1. GitHub as the Central Hub 
-- Core Repository:
-    - Hosts the SGS.ai core code, tests, and documentation.
-    - Acts as the single source of truth for the system.
-- AI-Generated Code:
-    - AI generates code based on user ideas or system requirements.
-    - The code is rigorously tested and committed to GitHub.
+### General Architecture
 
-### 2. Self-Updating Service 
+#### 1. GitHub as the Central Hub
+
+- Core Repository:
+
+  - Hosts the SGS.ai core code, tests, and documentation.
+  - Acts as the single source of truth for the system.
+
+- AI-Generated Code:
+
+  - AI generates code based on user ideas or system requirements.
+  - The code is rigorously tested and committed to GitHub.
+
+#### 2. Self-Updating Service
+
 - GitHub Monitoring:
-    - A ‘systemd’ service on the user side monitors the SGS.ai GitHub repository for updates.
-    - It compares the local commit ID with the latest commit ID on GitHub.
+  - A ‘systemd’ service on the user side monitors the SGS.ai GitHub repository for updates.
+  - It compares the local commit ID with the latest commit ID on GitHub.
 - Upgrade Process:
-    - If a new commit is detected, the service:
+  - If a new commit is detected, the service:
         - Downloads the latest version of the SGS.ai core.
         - Performs the upgrade while preserving user metadata.
         - Runs self-diagnostic checks.
         - Rolls back if the checks fail.
 
-### 3. Self-Diagnostic and Rollback 
+#### 3. Self-Diagnostic and Rollback
+
 - Diagnostic Checks:
-    - After an upgrade, the service runs a series of tests to ensure the system is functioning correctly.
-    - Example checks:
+  - After an upgrade, the service runs a series of tests to ensure the system is functioning correctly.
+  - Example checks:
         - Verify that Redis and HDF5 are accessible.
         - Test custom processing units.
         - Ensure the core can read and write metadata.
 - Rollback Mechanism:
-    - If any check fails, the service rolls back to the previous version.
-    - The rollback process restores the previous state of the SGS.ai core while preserving user metadata.
+  - If any check fails, the service rolls back to the previous version.
+  - The rollback process restores the previous state of the SGS.ai core while preserving user metadata.
 
-### 4. AI Integration 
+#### 4. AI Integration
+
 - Code Generation:
-    - AI (e.g., DeepSeek) generates code based on user ideas or system requirements.
-    - The generated code is tested rigorously before being committed to GitHub.
+  - AI (e.g., DeepSeek) generates code based on user ideas or system requirements.
+  - The generated code is tested rigorously before being committed to GitHub.
 - Testing Pipeline:
-    - Automated tests ensure the code is functional, efficient, and backward-compatible.
-    - Tests include unit tests, integration tests, and performance tests.
+  - Automated tests ensure the code is functional, efficient, and backward-compatible.
+  - Tests include unit tests, integration tests, and performance tests.
 - GitHub Integration:
-    - Once the code passes all tests, it is committed to the SGS.ai GitHub repository.
+  - Once the code passes all tests, it is committed to the SGS.ai GitHub repository.
 
-#### Example Workflow 
-- User Side 
-    - The self-updating service continuously monitors the SGS.ai GitHub repository.
-    - If a new commit is detected, the service:
+##### Example Workflow
+
+- User Side
+  - The self-updating service continuously monitors the SGS.ai GitHub repository.
+  - If a new commit is detected, the service:
         - Downloads the latest version.
         - Performs the upgrade.
         - Runs self-diagnostic checks.
         - Rolls back if necessary.
-- AI Side 
-    - AI generates code based on user ideas or system requirements.
-    - The code undergoes rigorous testing.
-    - Once the code passes all tests, it is committed to GitHub.
+- AI Side
+  - AI generates code based on user ideas or system requirements.
+  - The code undergoes rigorous testing.
+  - Once the code passes all tests, it is committed to GitHub.
 - Developer Side (Optional) 
-    - Human developers provide high-level ideas or requirements.
+  - Human developers provide high-level ideas or requirements.
+  - AI handles the implementation, testing, and deployment.
 
-    - AI handles the implementation, testing, and deployment.
+#### Benefits of SGS.ai
 
-### Benefits of SGS.ai 
 1. **Automated Updates**:
 Users always have the latest version of the SGS.ai core without manual intervention.
 2. **Self-Healing**:
@@ -106,119 +124,135 @@ AI acts as the "development team," reducing the need for human intervention.
 5. **Scalability**:
 The system can handle a large number of users and custom workflows.
 
-### The Future of Programming 
+#### The Future of Programming
+
 SGS.ai represents the future of programming, where:
+
 - Humans provide ideas and high-level requirements.
 - AI generates, tests, and deploys code.
 - Systems self-update, self-diagnose, and self-heal.
 
-```
+```text
 This is not just a tool—it’s a paradigm shift in how we think about software development. 
 ```
 
-
 ## Formal model
+
 SGS.ai is built on John von Neumann's concept of self-reproducing automata. We can conceptualize it as a system comprising four key components:
+
  1. **Universal Constructor (A)**
  2. **Universal Copier (B)**
  3. **Universal Controller (C)**
  4. **Universal Interface to the Environment (D)**, akin to a universal perceptron (or working automata).
 
 ### Tramsformers and their rolles
+
 - A: Universal Constructor 
-    - Role: Constructs new entities (HllSets, relationships, etc.).
-    - Operation: A ( Y ) → Z, where  Y is the input and  Z is the constructed output.
-- B: Universal Copier 
-    - Role: Copies entities.
-    - Operation: B ( Y ) → Z, where  Y is the input and  Z is the copied output.
+  - Role: Constructs new entities (HllSets, relationships, etc.).
+  - Operation: A ( Y ) → Z, where  Y is the input and  Z is the constructed output.
+- B: Universal Copier
+  - Role: Copies entities.
+  - Operation: B ( Y ) → Z, where  Y is the input and  Z is the copied output.
 - C: Universal Controller 
-    - Role: Orchestrates the operations of the other transformers (A, B, D).
-    - Operation: C ( X , Y ) → X ( Y ) , where  X is the transformer (A, B, or D) and  Y is the input.
+  - Role: Orchestrates the operations of the other transformers (A, B, D).
+  - Operation: C ( X , Y ) → X ( Y ) , where  X is the transformer (A, B, or D) and  Y is the input.
 - D: Universal Interface to Environment (Universal Perceptron) 
-    - Role: Interacts with the environment, gathers information, and provides feedback.
-    - Operation: D ( Y ) → Z, where  Y is the input and  Z is the processed output.
+  - Role: Interacts with the environment, gathers information, and provides feedback.
+  - Operation: D ( Y ) → Z, where  Y is the input and  Z is the processed output.
 
 ### Self-Reproduction Loop
 
 #### Step 1: Copying
+
 - The Universal Controller (C) forces the Universal Copier (B) to copy each transformer and its associated entities.
 - This creates a new set of transformers and entities that are copies of the originals.
 
 Formally:
-- C ( B, B ) → B ( B ) → B′ 
-- C ( B, A ) → B ( A ) → A′ 
-- C ( B, C ) → B ( C ) → C′ 
+
+- C ( B, B ) → B ( B ) → B′
+- C ( B, A ) → B ( A ) → A′
+- C ( B, C ) → B ( C ) → C′
 - C ( B, D ) → B ( D ) → D′ ​
 
-#### Step 2: Mutating 
+#### Step 2: Mutating
+
 - The Universal Controller (C) forces the Universal Interface to Environment (D) to mutate the copied transformers and entities.
 - This introduces variations in the copied entities, enabling evolution.
 
 Formally:
-- C ( D, B′ ) → D ( B′ ) → B′′ 
-- C ( D, A′ ) → D ( A′ ) → A′′ 
-- C ( D, C′ ) → D ( C′ ) → C′′ 
-- C ( D, D′ ) → D ( D′ ) → D′′ 
 
-#### Step 3: Committing 
+- C ( D, B′ ) → D ( B′ ) → B′′
+- C ( D, A′ ) → D ( A′ ) → A′′
+- C ( D, C′ ) → D ( C′ ) → C′′
+- C ( D, D′ ) → D ( D′ ) → D′′
+
+#### Step 3: Committing
+
 - The Universal Controller (C) forces the Universal Constructor (A) to commit the mutated transformers and entities.
 - This integrates the new entities into the system, completing the self-reproduction loop.
 
 Formally:
-- C ( A, B ′ ′ ) → A ( B′′ ) → B 
-- C ( A, A ′ ′ ) → A ( A′′ ) → A 
-- C ( A, C ′ ′ ) → A ( C′′ ) → C 
+
+- C ( A, B ′ ′ ) → A ( B′′ ) → B
+- C ( A, A ′ ′ ) → A ( A′′ ) → A
+- C ( A, C ′ ′ ) → A ( C′′ ) → C
 - C ( A, D ′ ′ ) → A ( D′′ ) → D
 - C ( C, ( A, B, C, D ) ) → C ( A, B, C, D ) → SGS.ai
 
 This ensures that the system is fully assembled and ready for use after each regeneration.
 
-### Controllable Destruction (Garbage Collection) 
+### Controllable Destruction (Garbage Collection)
+
 Garbage collection is performed outside the self-reproduction loop to remove entities that are no longer needed. This ensures that the system remains efficient and does not accumulate unnecessary data.
-#### Garbage Collection Process 
+
+#### Garbage Collection Process
+
 - Identify Unused Entities:
-    - Entities that are no longer referenced by any transformer or relationship are marked for removal.
+  - Entities that are no longer referenced by any transformer or relationship are marked for removal.
 - Remove Entities:
-    - The garbage collector removes the marked entities from the system.
+  - The garbage collector removes the marked entities from the system.
 
 ## HLLSet Algebra Module
 
 ### Overview
+
 The HllSets.jl module provides an implementation of HyperLogLog (HLL) set algebra with enhanced functionality for set operations. This implementation is based on the original work by Flajolet et al. with improvements from Google's research, and incorporates significant modifications from Jakob Nybo Nissen's Probably.jl implementation.
 
 #### Key Features
+
 - HyperLogLog Cardinality Estimation: Probabilistic counting of unique elements with high accuracy
 
 - Set Operations: Full algebra support including:
 
-    - Union (union, union!)
+  - Union (union, union!)
 
-    - Intersection (intersect)
+  - Intersection (intersect)
 
-    - Difference (diff, set_comp)
+  - Difference (diff, set_comp)
 
-    - Symmetric difference (set_xor)
+  - Symmetric difference (set_xor)
 
-    - Change detection (set_added, set_deleted)
+  - Change detection (set_added, set_deleted)
 
 - Similarity Metrics:
 
-    - Jaccard similarity (match)
+  - Jaccard similarity (match)
 
-    - Cosine similarity (cosine)
+  - Cosine similarity (cosine)
 
 - Serialization:
 
-    - Binary tensor conversion (to_binary_tensor)
+  - Binary tensor conversion (to_binary_tensor)
 
-    - String representation (tensor_to_string)
+  - String representation (tensor_to_string)
 
-    - Restoration from serialized forms (restore!)
+  - Restoration from serialized forms (restore!)
 
 ### Usage Examples
+
 Basic Operations
 
-```
+```python
 using HllSets
 
 # Create two HLL sets
@@ -242,7 +276,8 @@ changes = diff(h1, h2)  # Returns (DEL, RET, NEW) tuple
 ```
 
 Similarity Comparison
-```
+
+```python
 # Calculate similarity metrics
 jaccard_similarity = match(h1, h2)  # Percentage
 cosine_similarity = cosine(h1, h2)  # Float between 0 and 1
@@ -260,7 +295,7 @@ HLLSets provide the perfect balance of accuracy and efficiency for SGS.ai's larg
 
 - Error-bound: Predictable 1-2% error rate for cardinality estimation
 
-```    
+```python
 # Example: Track unique users across massive dataset
 user_actions = HllSet(12)  # 4096 registers (~1.5KB memory)
 for event in data_stream
@@ -270,23 +305,29 @@ println("Unique users: ", count(user_actions))  # ~0.8% error
 ```
 
 Key Enhancements vs Original Implementation
-Feature            |	Probably.jl	| SGS.ai HLLSet	  | Benefit
--------------------|----------------|-----------------|--------
-Set Operations	   | ❌ None	       |✅ Full algebra	| Enables A∩B, A-B, etc
-Change Detection   | ❌ No	       |✅ Added/Deleted	| Track set evolution
-Similarity Metrics | ❌ No	       |✅ Jaccard/Cosine| Compare sets
-Serialization	   | ❌ Basic	   |✅ Tensor/String	| Better integration
-Memory Efficiency  | 64-bit	        | 32-bit counters |	50% reduction
+
+| Feature | Probably.jl | SGS.ai HLLSet | Benefit |
+| ------------------- | ---------------- | ----------------- | -------- |
+| Set Operations | ❌ None | ✅ Full algebra | Enables A∩B, A-B, etc |
+| Change Detection | ❌ No | ✅ Added/Deleted | Track set evolution |
+| Similarity Metrics | ❌ No | ✅ Jaccard/Cosine | Compare sets |
+| Serialization | ❌ Basic | ✅ Tensor/String | Better integration |
+| Memory Efficiency | 64-bit | 32-bit counters | 50% reduction |
 
 ## Development Environment Setup
+
 ### All Platforms (Required Tools)
+
 1. Podman (Docker-compatible alternative):
-```
+
+```bash
 # Install podman-compose separately
 pip install podman-compose
 ```
+
 2. Julia (Must use official binaries):
-```
+
+```bash
  # Windows/macOS: Download from https://julialang.org/downloads/
 # Linux (recommended method):
 curl -fsSL https://install.julialang.org | sh
@@ -294,7 +335,7 @@ curl -fsSL https://install.julialang.org | sh
 
 ### Fedora 40 (Recommended)
 
-```
+```bash
 # Podman and dependencies
 sudo dnf install -y podman podman-docker podman-plugins
 sudo systemctl enable --now podman.socket
@@ -309,7 +350,7 @@ sudo dnf install -y julia
 
 ### Ubuntu/Debian
 
-```
+```bash
 # Podman
 sudo apt install -y podman podman-compose
 
@@ -324,21 +365,22 @@ sudo ln -s /opt/julia-*/bin/julia /usr/local/bin/julia
 ```
 
 ### Windows (WSL2 Recommended)
+
 1. Install Windows Subsystem for Linux:
 
-```
+```bash
 wsl --install
 ```
 
 2. In WSL Ubuntu:
 
-```
+```bash
 # Follow Ubuntu instructions above
 ```
 
 3. For native Windows:
 
-```
+```bash
 # Podman
 winget install -e --id RedHat.Podman
 
@@ -347,7 +389,8 @@ winget install -e --id Julia.Julia
 ```
 
 ### macOS
-```
+
+```bash
 # Podman
 brew install podman podman-compose
 podman machine init
@@ -358,29 +401,35 @@ brew install --cask julia
 ```
 
 ### Verification
+
 Check all tools are properly installed:
-```
+
+```bash
 podman --version  # Should show 4.0+
 podman-compose --version  # Should show 1.0+
 julia -e 'println("Julia $(VERSION)")'  # Should be 1.9+
 ```
 
 #### Post-Installation
+
 1. Podman Configuration (Optional):
-```
+
+```bash
 # Enable rootless mode (recommended)
 sudo usermod --add-subuids 100000-165535 --add-subgids 100000-165535 $USER
 ```
 
 2. Julia Packages:
-```
+
+```julia
 # Run in Julia REPL
 using Pkg
 Pkg.add(["SHA", "JSON3"])
 ```
 
 ## Quick start
-```
+
+```bash
 bash <(curl -s https://raw.githubusercontent.com/alexmy21/SGS.ai/main/bootstrap.sh)
 ```
 
@@ -388,7 +437,7 @@ bash <(curl -s https://raw.githubusercontent.com/alexmy21/SGS.ai/main/bootstrap.
 
 You can use test_api.sh script to test installation on the user side:
 
-```
+```bash
 #!/bin/bash
 
 BASE_URL="http://localhost:8000"
@@ -409,9 +458,10 @@ curl -X POST "$BASE_URL/process" \
      -w "\nStatus: %{http_code}\n"    ```
 
 ```
+
 After running you should get output similar to this:
 
-```
+```bash
 Testing connection...
 {"message":"Hello, SGS.core!"}
 Status: 200
@@ -425,10 +475,10 @@ Testing Redis processor...
 Status: 200
 ```
 
-
 # References
-1. Self Generative Systems (SGS) and Its Integration with AI Models Author: Alex Mylnikov Authors Info & Claims
-AISNS '24: Proceedings of the 2024 2nd International Conference on Artificial Intelligence, Systems and Network Security Pages 345 - 354 (https://doi.org/10.1145/3714334.3714392)
+
+1. [Self Generative Systems (SGS) and Its Integration with AI Models Author: Alex Mylnikov Authors Info & Claims
+AISNS '24: Proceedings of the 2024 2nd International Conference on Artificial Intelligence, Systems and Network Security Pages 345 - 354](https://doi.org/10.1145/3714334.3714392)
 2. https://github.com/alexmy21/SGS.ai/blob/main/.PDF/Thoughts%20on%20Collaborative%20Development_1.pdf
 3. https://github.com/alexmy21/SGS.ai/blob/main/.PDF/Thoughts%20on%20Collaborative%20Development_2.pdf
 4. https://linuxiac.com/how-to-install-virtualbox-on-fedora-linux/
